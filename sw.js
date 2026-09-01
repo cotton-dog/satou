@@ -1,17 +1,17 @@
 const CACHE_NAME = "satou-v1";
 
-const FILES = [
-
+const CACHE_FILES = [
     "./",
     "./index.html",
     "./manifest.webmanifest",
-
     "./icons/icon-192.png",
-    "./icons/icon-512.png",
-    "./icons/icon-original.png"
-
+    "./icons/icon-512.png"
 ];
 
+
+/* =========================
+   安装
+========================= */
 
 self.addEventListener(
     "install",
@@ -19,10 +19,13 @@ self.addEventListener(
 
         event.waitUntil(
 
-            caches.open(CACHE_NAME)
+            caches
+                .open(CACHE_NAME)
                 .then(cache => {
 
-                    return cache.addAll(FILES);
+                    return cache.addAll(
+                        CACHE_FILES
+                    );
 
                 })
 
@@ -34,27 +37,41 @@ self.addEventListener(
 );
 
 
+/* =========================
+   激活
+========================= */
+
 self.addEventListener(
     "activate",
     event => {
 
         event.waitUntil(
 
-            caches.keys().then(keys => {
+            caches
+                .keys()
+                .then(keys => {
 
-                return Promise.all(
+                    return Promise.all(
 
-                    keys
-                        .filter(key =>
-                            key !== CACHE_NAME
-                        )
-                        .map(key =>
-                            caches.delete(key)
-                        )
+                        keys.map(key => {
 
-                );
+                            if(
+                                key !== CACHE_NAME
+                            ){
 
-            })
+                                return caches.delete(
+                                    key
+                                );
+
+                            }
+
+                            return null;
+
+                        })
+
+                    );
+
+                })
 
         );
 
@@ -64,26 +81,28 @@ self.addEventListener(
 );
 
 
+/* =========================
+   网络请求
+========================= */
+
 self.addEventListener(
     "fetch",
     event => {
 
         event.respondWith(
 
-            caches.match(event.request)
+            caches
+                .match(event.request)
                 .then(cached => {
 
                     if(cached){
+
                         return cached;
+
                     }
 
-                    return fetch(event.request);
-
-                })
-                .catch(() => {
-
-                    return caches.match(
-                        "./index.html"
+                    return fetch(
+                        event.request
                     );
 
                 })
