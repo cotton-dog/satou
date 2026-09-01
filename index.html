@@ -16,19 +16,20 @@
 
 
 <!-- =========================
-     PWA
+     SATOU PWA
 ========================= -->
 
-<link rel="manifest" href="./manifest.webmanifest">
+<link rel="manifest"
+      href="./manifest.webmanifest">
 
-<!-- 原本的 Satou 图标 -->
+<!-- 网站图标 -->
 <link rel="icon"
       type="image/png"
-      href="https://i.imgs.ovh/2026/09/02/5fd685cc628af5558ac9b6ee3668867c.png">
+      href="./icons/icon-192.png">
 
-<!-- iPhone / iPad 添加到主屏幕 -->
+<!-- 添加到 iPhone 主屏幕 -->
 <link rel="apple-touch-icon"
-      href="https://i.imgs.ovh/2026/09/02/5fd685cc628af5558ac9b6ee3668867c.png">
+      href="./icons/icon-192.png">
 
 <meta name="apple-mobile-web-app-title"
       content="satou">
@@ -66,10 +67,13 @@ body{
 }
 
 body{
+
     background:#ffffff;
 
     display:flex;
+
     align-items:center;
+
     justify-content:center;
 
     font-family:
@@ -80,31 +84,28 @@ body{
         Arial,
         sans-serif;
 
-    /* 防止手机浏览器长按出现选中文字 */
     user-select:none;
     -webkit-user-select:none;
 
-    /* 防止触摸拖动网页 */
-    touch-action:none;
+    -webkit-tap-highlight-color:
+        transparent;
 }
 
 
 /* =========================
-   Satou 手机整体
+   手机整体
 ========================= */
 
 .phone{
+
     position:relative;
 
-    /*
-       手机比例
-       430 : 860
-    */
-
     width:min(96vw,430px);
+
     height:min(96vh,860px);
 
     max-width:calc(100vw - 14px);
+
     max-height:calc(100vh - 14px);
 
     aspect-ratio:430 / 860;
@@ -112,9 +113,7 @@ body{
     border-radius:58px;
 
 
-    /* =====================
-       外层金属边
-    ===================== */
+    /* 外层金属边 */
 
     background:
         linear-gradient(
@@ -130,9 +129,7 @@ body{
     padding:7px;
 
 
-    /* =====================
-       立体边缘
-    ===================== */
+    /* 立体边缘 */
 
     box-shadow:
 
@@ -213,7 +210,7 @@ body{
 
 
 /* =========================
-   这里以后就是 Satou 手机界面
+   Satou 手机内容区域
 ========================= */
 
 .screen-content{
@@ -225,18 +222,11 @@ body{
     width:100%;
     height:100%;
 
-    /*
-       目前留白。
+    overflow:hidden;
 
-       以后 Satou 的：
-       锁屏
-       桌面
-       App
-       状态栏
-       壁纸
-       等全部放这里。
-    */
+    background:#ffffff;
 
+    z-index:1;
 }
 
 
@@ -249,11 +239,13 @@ body{
     position:absolute;
 
     top:18px;
+
     left:50%;
 
     transform:translateX(-50%);
 
     width:116px;
+
     height:32px;
 
     border-radius:20px;
@@ -289,11 +281,13 @@ body{
     position:absolute;
 
     right:10px;
+
     top:50%;
 
     transform:translateY(-50%);
 
     width:12px;
+
     height:12px;
 
     border-radius:50%;
@@ -329,9 +323,11 @@ body{
     position:absolute;
 
     width:3px;
+
     height:3px;
 
     left:3px;
+
     top:2px;
 
     border-radius:50%;
@@ -350,11 +346,13 @@ body{
     position:absolute;
 
     top:-2px;
+
     left:50%;
 
     transform:translateX(-50%);
 
     width:88px;
+
     height:4px;
 
     border-radius:
@@ -376,7 +374,7 @@ body{
 
 
 /* =========================
-   左侧实体按键
+   左侧按键
 ========================= */
 
 .left-button{
@@ -508,7 +506,7 @@ body{
 
 
 /* =========================
-   小屏手机
+   小屏幕
 ========================= */
 
 @media(max-width:360px){
@@ -582,11 +580,12 @@ body{
 
         height:58px;
     }
+
 }
 
 
 /* =========================
-   横屏 / 矮屏幕
+   矮屏设备
 ========================= */
 
 @media(max-height:500px){
@@ -599,24 +598,7 @@ body{
 
         aspect-ratio:430 / 860;
     }
-}
 
-
-/* =========================
-   真正安装成 App 后
-   尽量利用安全区域
-========================= */
-
-@supports(padding:env(safe-area-inset-top)){
-
-    .screen-content{
-
-        padding-top:
-            env(safe-area-inset-top);
-
-        padding-bottom:
-            env(safe-area-inset-bottom);
-    }
 }
 
 </style>
@@ -628,7 +610,7 @@ body{
 
 
 <!-- ==================================================
-     SATOU 手机
+     SATOU
 ================================================== -->
 
 <div class="phone">
@@ -658,15 +640,16 @@ body{
     <div class="bezel">
 
 
-        <!-- 白色屏幕 -->
+        <!-- 屏幕 -->
 
         <div class="screen">
 
 
             <!--
-                Satou 真正的手机界面区域
+                SATOU 手机系统内容
 
-                以后所有内容都写在这里
+                以后所有桌面、锁屏、App
+                都放在这个区域
             -->
 
             <div class="screen-content">
@@ -701,7 +684,7 @@ body{
 
 
 /* =========================
-   注册 Service Worker
+   Service Worker
 ========================= */
 
 if("serviceWorker" in navigator){
@@ -711,18 +694,20 @@ if("serviceWorker" in navigator){
         function(){
 
             navigator.serviceWorker
-                .register("./sw.js")
+                .register("./sw.js", {
+                    scope:"./"
+                })
                 .then(function(){
 
                     console.log(
-                        "satou：Service Worker 已启动"
+                        "satou PWA 已启动"
                     );
 
                 })
                 .catch(function(error){
 
-                    console.log(
-                        "satou：Service Worker 注册失败",
+                    console.error(
+                        "satou Service Worker 错误:",
                         error
                     );
 
@@ -749,7 +734,7 @@ document.addEventListener(
 
 
 /* =========================
-   禁止双击缩放
+   防止双击缩放
 ========================= */
 
 let lastTouchEnd = 0;
@@ -758,8 +743,7 @@ document.addEventListener(
     "touchend",
     function(event){
 
-        const now =
-            Date.now();
+        const now = Date.now();
 
         if(now - lastTouchEnd <= 300){
 
@@ -777,4 +761,5 @@ document.addEventListener(
 
 
 </body>
+
 </html>
