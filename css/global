@@ -1,0 +1,38 @@
+/* =========================
+   SATOU 全局基础
+========================= */
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    -webkit-tap-highlight-color:transparent;
+}
+
+html,
+body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+}
+
+body{
+    background:#eeeeee;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    user-select:none;
+    -webkit-user-select:none;
+
+    touch-action:none;
+
+    font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Helvetica Neue",
+    "PingFang SC",
+    "Segoe UI",
+    sans-serif;
+}
