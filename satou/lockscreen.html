@@ -1,1659 +1,1249 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
-
 <meta charset="UTF-8">
-
-<meta name="viewport"
-content="width=device-width,
-initial-scale=1.0,
-maximum-scale=1.0,
-user-scalable=no,
-viewport-fit=cover">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>手机锁屏</title>
-
-
 <style>
-
-/* =========================================================
-   基础
-========================================================= */
-
-* {
+  * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
-}
+  }
 
-
-html,
-body {
-    width: 100%;
+  html, body {
     height: 100%;
+    width: 100%;
     overflow: hidden;
-}
+  }
 
-
-body {
-
+  body {
     position: relative;
-
-    width: 100%;
-    height: 100%;
-
     background: #000;
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC", "Segoe UI", sans-serif;
+  }
 
-    font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Helvetica Neue",
-        "PingFang SC",
-        "Segoe UI",
-        sans-serif;
-}
+  /* ================= WALLPAPER LAYER ================= */
 
-
-/* =========================================================
-   WALLPAPER LAYER
-
-   这里仍然使用 canvas 作为壁纸。
-
-   后面如果要换成真正照片：
-   Wallpaper.setImage(imgElement)
-
-   不需要修改其他组件。
-========================================================= */
-
-#wallpaper {
-
-    position: absolute;
-
+  #wallpaper {
+    position: fixed;
     inset: 0;
-
     width: 100%;
     height: 100%;
-
     z-index: 0;
+  }
 
-}
+  /* ================= STATUS BAR COMPONENT ================= */
 
-
-/* =========================================================
-   STATUS BAR
-========================================================= */
-
-.status-bar {
-
-    position: absolute;
-
+  .status-bar {
+    position: fixed;
     top: 0;
     left: 0;
-
     width: 100%;
-
     display: flex;
-
     align-items: center;
-
     justify-content: space-between;
-
-    padding-left: 28px;
-    padding-right: 28px;
-
-    padding-top:
-        calc(env(safe-area-inset-top) + 14px);
-
+    padding: 0 28px;
+    padding-top: calc(env(safe-area-inset-top) + 14px);
     z-index: 10;
-
     color: #fff;
+    transition: color 0.4s ease;
+  }
 
-    transition:
-        color 0.4s ease;
-
-}
-
-
-.status-time {
-
+  .status-time {
     font-size: 15px;
-
     font-weight: 600;
-
     letter-spacing: 0.2px;
-
     color: inherit;
+  }
 
-}
-
-
-.status-icons {
-
+  .status-icons {
     display: flex;
-
     align-items: center;
+  }
 
-}
-
-
-.status-icons svg {
-
+  .status-icons svg {
     width: 78px;
-
     height: auto;
-
     display: block;
+  }
 
-}
-
-
-.status-icons svg path {
-
+  .status-icons svg path {
     fill: currentColor;
+  }
 
-}
-
-
-/* =========================================================
-   BATTERY
-========================================================= */
-
-#battery-fill {
-
+  #battery-fill {
     fill: currentColor;
+    transition: width 0.4s ease, fill 0.4s ease;
+  }
 
-    transition:
-        width 0.4s ease,
-        fill 0.4s ease;
+  /* ---------- Lock screen clock ---------- */
 
-}
-
-
-/* =========================================================
-   LOCK SCREEN CLOCK
-========================================================= */
-
-.clock-wrap {
-
-    position: absolute;
-
+  .clock-wrap {
+    position: fixed;
     top: 9vh;
-
     left: 0;
-
     width: 100%;
-
     text-align: center;
-
     color: #fff;
-
-    text-shadow:
-        0 2px 12px rgba(0,0,0,0.25);
-
+    text-shadow: 0 2px 12px rgba(0,0,0,0.25);
     z-index: 5;
+  }
 
-}
-
-
-.clock-date {
-
+  .clock-date {
     font-size: 15px;
-
     font-weight: 500;
-
     margin-bottom: 4px;
-
     padding: 0 24px;
+  }
 
-}
-
-
-.clock-time {
-
+  .clock-time {
     font-size: 88px;
-
     font-weight: 600;
-
     line-height: 1;
-
     letter-spacing: -2px;
+  }
 
-}
+  /* ================= BOTTOM CONTROLS COMPONENT ================= */
 
-
-/* =========================================================
-   BOTTOM CONTROLS
-========================================================= */
-
-.bottom-controls {
-
-    position: absolute;
-
-    bottom:
-        calc(env(safe-area-inset-bottom) + 40px);
-
+  .bottom-controls {
+    position: fixed;
+    bottom: calc(env(safe-area-inset-bottom) + 40px);
     left: 0;
-
     width: 100%;
-
     display: flex;
-
     justify-content: space-between;
-
     padding: 0 40px;
-
     z-index: 10;
+  }
 
-}
-
-
-.control-btn {
-
+  .control-btn {
     width: 54px;
     height: 54px;
-
     border-radius: 50%;
-
-    background:
-        rgba(255,255,255,0.25);
-
+    background: rgba(255, 255, 255, 0.25);
     color: #fff;
-
-    backdrop-filter:
-        blur(10px);
-
-    -webkit-backdrop-filter:
-        blur(10px);
-
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     display: flex;
-
     align-items: center;
     justify-content: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    transition: background 0.4s ease, color 0.4s ease;
+  }
 
-    box-shadow:
-        0 2px 10px rgba(0,0,0,0.15);
-
-    transition:
-        background 0.4s ease,
-        color 0.4s ease;
-
-}
-
-
-.control-btn svg {
-
+  .control-btn svg {
     width: 24px;
     height: 24px;
-
     display: block;
+  }
 
-}
-
-
-.control-btn svg path {
-
+  .control-btn svg path {
     fill: currentColor;
+  }
 
-}
-
-
-/* =========================================================
-   LIGHT WALLPAPER MODE
-========================================================= */
-
-.control-btn.on-light {
-
-    background:
-        rgba(0,0,0,0.22);
-
+  .control-btn.on-light {
+    background: rgba(0, 0, 0, 0.22);
     color: #000;
+  }
 
-}
+  /* ---------- Home indicator ---------- */
 
-
-/* =========================================================
-   HOME INDICATOR
-========================================================= */
-
-.home-indicator {
-
-    position: absolute;
-
-    bottom:
-        calc(env(safe-area-inset-bottom) + 8px);
-
+  .home-indicator {
+    position: fixed;
+    bottom: calc(env(safe-area-inset-bottom) + 8px);
     left: 50%;
-
-    transform:
-        translateX(-50%);
-
+    transform: translateX(-50%);
     width: 134px;
-
     height: 5px;
-
     background: #fff;
-
     border-radius: 3px;
-
     opacity: 0.9;
-
     z-index: 10;
+    transition: background 0.4s ease;
+  }
 
-    transition:
-        background 0.4s ease;
-
-}
-
-
-.home-indicator.on-light {
-
+  .home-indicator.on-light {
     background: #000;
-
-}
-
-
-/* =========================================================
-   手机屏幕较小时适配
-========================================================= */
-
-@media(max-height:650px){
-
-    .clock-wrap {
-
-        top: 8vh;
-
-    }
-
-    .clock-time {
-
-        font-size: 72px;
-
-    }
-
-    .bottom-controls {
-
-        bottom:
-            calc(env(safe-area-inset-bottom) + 32px);
-
-    }
-
-}
-
-
-/* =========================================================
-   安全区域
-========================================================= */
-
-@supports(padding:env(safe-area-inset-top)){
-
-    body {
-
-        padding-top: 0;
-
-        padding-bottom: 0;
-
-    }
-
-}
-
+  }
 </style>
-
 </head>
-
-
 <body>
-
-
-<!-- =========================================================
-     WALLPAPER
-========================================================= -->
 
 <canvas id="wallpaper"></canvas>
 
+<!-- Status bar -->
 
+<div class="status-bar" id="status-bar">
 
-<!-- =========================================================
-     STATUS BAR
-========================================================= -->
+  <div class="status-time" id="status-time">9:41</div>
 
-<div
-    class="status-bar"
-    id="status-bar"
->
+  <div class="status-icons">
 
+    <svg id="status-svg"
+         viewBox="0 0 5717 1024"
+         version="1.1"
+         xmlns="http://www.w3.org/2000/svg">
 
-    <!-- 当前真实时间 -->
+      <path d="M5196.8 998.4H3908.266667c-93.866667 0-128-8.533333-179.2-34.133333-34.133333-17.066667-68.266667-51.2-85.333334-85.333334-25.6-42.666667-34.133333-85.333333-34.133333-179.2V324.266667c0-93.866667 8.533333-136.533333 34.133333-179.2 17.066667-34.133333 51.2-68.266667 85.333334-85.333334 42.666667-25.6 85.333333-34.133333 179.2-34.133333H5205.333333c93.866667 0 128 8.533333 179.2 34.133333 34.133333 17.066667 68.266667 51.2 85.333334 85.333334 25.6 42.666667 34.133333 85.333333 34.133333 179.2v384c0 93.866667-8.533333 136.533333-34.133333 179.2-17.066667 34.133333-51.2 68.266667-85.333334 85.333333-51.2 17.066667-93.866667 25.6-187.733333 25.6zM3908.266667 110.933333c-93.866667 0-110.933333 8.533333-136.533334 17.066667-25.6 17.066667-42.666667 34.133333-51.2 59.733333-17.066667 17.066667-25.6 42.666667-25.6 136.533334v384c0 93.866667 8.533333 110.933333 17.066667 136.533333 8.533333 25.6 25.6 42.666667 51.2 51.2 25.6 8.533333 42.666667 17.066667 136.533333 17.066667h1297.066667c93.866667 0 110.933333-8.533333 136.533333-17.066667 25.6-8.533333 42.666667-25.6 51.2-51.2 17.066667-25.6 25.6-51.2 25.6-136.533333V324.266667c0-85.333333-8.533333-110.933333-17.066667-136.533334-25.6-25.6-51.2-42.666667-85.333333-51.2-25.6-8.533333-42.666667-17.066667-136.533333-17.066666H3908.266667z"
+            opacity=".35"></path>
 
-    <div
-        class="status-time"
-        id="status-time"
-    >
-        9:41
-    </div>
+      <path d="M5572.266667 341.333333v341.333334c68.266667-25.6 110.933333-93.866667 110.933333-170.666667s-42.666667-145.066667-110.933333-170.666667"
+            opacity=".4"></path>
 
+      <path d="M3925.333333 196.266667h1245.866667c51.2 0 68.266667 8.533333 85.333333 17.066666 25.6 8.533333 34.133333 25.6 51.2 42.666667 8.533333 17.066667 17.066667 34.133333 17.066667 85.333333v341.333334c0 51.2-8.533333 68.266667-17.066667 85.333333-8.533333 17.066667-25.6 34.133333-42.666666 42.666667-17.066667 8.533333-34.133333 17.066667-85.333334 17.066666H3925.333333c-51.2 0-68.266667-8.533333-85.333333-17.066666-17.066667-8.533333-34.133333-25.6-42.666667-42.666667s-17.066667-34.133333-17.066666-85.333333V341.333333c0-51.2 8.533333-68.266667 17.066666-85.333333s25.6-34.133333 42.666667-42.666667 34.133333-17.066667 85.333333-17.066666zM2534.4 221.866667c187.733333 0 375.466667 76.8 512 204.8 8.533333 8.533333 25.6 8.533333 34.133333 0l102.4-102.4c8.533333-8.533333 8.533333-8.533333 8.533334-17.066667s0-17.066667-8.533334-17.066667c-358.4-349.866667-930.133333-349.866667-1288.533333 0-17.066667 0-17.066667 8.533333-17.066667 17.066667s0 17.066667 8.533334 17.066667L1988.266667 426.666667c8.533333 8.533333 25.6 8.533333 34.133333 0 136.533333-128 315.733333-204.8 512-204.8z m0 324.266666c102.4 0 204.8 42.666667 281.6 110.933334 8.533333 8.533333 25.6 8.533333 34.133333 0l102.4-102.4c8.533333-8.533333 8.533333-8.533333 8.533334-17.066667s0-17.066667-8.533334-17.066667c-238.933333-221.866667-597.333333-221.866667-836.266666 0-8.533333 8.533333-8.533333 8.533333-8.533334 17.066667s0 17.066667 8.533334 17.066667L2218.666667 657.066667c8.533333 8.533333 25.6 8.533333 34.133333 0 76.8-68.266667 170.666667-110.933333 281.6-110.933334z m187.733333 238.933334c8.533333 0 8.533333-8.533333 8.533334-17.066667s0-17.066667-8.533334-17.066667c-110.933333-93.866667-273.066667-93.866667-375.466666 0-8.533333 8.533333-8.533333 8.533333-8.533334 17.066667s0 17.066667 8.533334 17.066667l170.666666 170.666666c8.533333 8.533333 8.533333 8.533333 17.066667 8.533334s17.066667 0 17.066667-8.533334l170.666666-170.666666zM85.333333 622.933333h85.333334c51.2 0 85.333333 34.133333 85.333333 85.333334v170.666666c0 51.2-34.133333 85.333333-85.333333 85.333334H85.333333c-51.2 0-85.333333-34.133333-85.333333-85.333334v-170.666666c0-42.666667 34.133333-85.333333 85.333333-85.333334z m401.066667-170.666666h85.333333c51.2 0 85.333333 34.133333 85.333334 85.333333v341.333333c0 51.2-34.133333 85.333333-85.333334 85.333334h-85.333333c-51.2 0-85.333333-34.133333-85.333333-85.333334v-341.333333c0-42.666667 34.133333-85.333333 85.333333-85.333333zM878.933333 256h85.333334c51.2 0 85.333333 34.133333 85.333333 85.333333v537.6c0 51.2-34.133333 85.333333-85.333333 85.333334h-85.333334c-51.2 0-85.333333-85.333334-85.333333-85.333334V341.333333c0-51.2 42.666667-85.333333 85.333333-85.333333zM1280 59.733333h85.333333c51.2 0 85.333333 34.133333 85.333334 85.333334v742.4c0 51.2-34.133333 85.333333-85.333334 85.333333h-85.333333c-51.2 0-85.333333-85.333333-85.333333-85.333333V145.066667c0-51.2 42.666667-85.333334 85.333333-85.333334z"></path>
 
-    <!-- 信号 / Wi-Fi / 电池 -->
+      <rect id="battery-fill"
+            x="3937"
+            y="212"
+            width="1220"
+            height="608"
+            rx="70"></rect>
 
-    <div class="status-icons">
+    </svg>
 
-
-        <svg
-            id="status-svg"
-            viewBox="0 0 5717 1024"
-            version="1.1"
-            xmlns="http://www.w3.org/2000/svg"
-        >
-
-
-            <!-- =================================================
-                 电池外框
-            ================================================== -->
-
-            <path
-                d="M5196.8 998.4H3908.266667c-93.866667 0-128-8.533333-179.2-34.133333-34.133333-17.066667-68.266667-51.2-85.333334-85.333334-25.6-42.666667-34.133333-85.333333-34.133333-179.2V324.266667c0-93.866667 8.533333-136.533333 34.133333-179.2 17.066667-34.133333 51.2-68.266667 85.333334-85.333334 42.666667-25.6 85.333333-34.133333 179.2-34.133333H5205.333333c93.866667 0 128 8.533333 179.2 34.133333 34.133333 17.066667 68.266667 51.2 85.333334 85.333334 25.6 42.666667 34.133333 85.333333 34.133333 179.2v384c0 93.866667-8.533333 136.533333-34.133333 179.2-17.066667 34.133333-51.2 68.266667-85.333334 85.333333-51.2 17.066667-93.866667 25.6-187.733333 25.6zM3908.266667 110.933333c-93.866667 0-110.933333 8.533333-136.533334 17.066667-25.6 17.066667-42.666667 34.133333-51.2 59.733333-17.066667 17.066667-25.6 42.666667-25.6 136.533334v384c0 93.866667 8.533333 110.933333 17.066667 136.533333 8.533333 25.6 25.6 42.666667 51.2 51.2 25.6 8.533333 42.666667 17.066667 136.533333 17.066667h1297.066667c93.866667 0 110.933333-8.533333 136.533333-17.066667 25.6-8.533333 42.666667-25.6 51.2-51.2 17.066667-25.6 25.6-51.2 25.6-136.533333V324.266667c0-85.333333-8.533333-110.933333-17.066667-136.533334-25.6-8.533333-25.6-42.666667-51.2-51.2-25.6-8.533333-42.666667-17.066667-136.533333-17.066666H3908.266667z"
-                opacity=".35"
-            ></path>
-
-
-            <!-- =================================================
-                 电池凸起
-            ================================================== -->
-
-            <path
-                d="M5572.266667 341.333333v341.333334c68.266667-25.6 110.933333-93.866667 110.933333-170.666667s-42.666667-145.066667-110.933333-170.666667"
-                opacity=".4"
-            ></path>
-
-
-            <!-- =================================================
-                 电池内部 + 信号 + Wi-Fi
-            ================================================== -->
-
-            <path
-                d="M3925.333333 196.266667h1245.866667c51.2 0 68.266667 8.533333 85.333333 17.066666 25.6 8.533333 34.133333 25.6 51.2 42.666667 8.533333 17.066667 17.066667 34.133333 17.066667 85.333333v341.333334c0 51.2-8.533333 68.266667-17.066667 85.333333-8.533333 17.066667-25.6 34.133333-42.666666 42.666667-17.066667 8.533333-17.066667 17.066667-85.333334 17.066666H3925.333333c-51.2 0-68.266667-8.533333-85.333333-17.066666-17.066667-8.533333-25.6-25.6-42.666667-42.666667s-17.066667-34.133333-17.066666-85.333333V341.333333c0-51.2 8.533333-68.266667 17.066666-85.333333s25.6-34.133333 42.666667-42.666667 34.133333-17.066666 85.333333-17.066666zM2534.4 221.866667c187.733333 0 375.466667 76.8 512 204.8 8.533333 8.533333 25.6 8.533333 34.133333 0l102.4-102.4c8.533333-8.533333 8.533333-8.533333 8.533334-17.066667s0-17.066667-8.533334-17.066667c-358.4-349.866667-930.133333-349.866667-1288.533333 0-17.066667 0-17.066667 8.533333-17.066667 17.066667s0 17.066667 8.533334 17.066667L1988.266667 426.666667c8.533333 8.533333 25.6 8.533333 34.133333 0 136.533333-128 315.733333-204.8 512-204.8z m0 324.266666c102.4 0 204.8 42.666667 281.6 110.933334 8.533333 8.533333 25.6 8.533333 34.133333 0l102.4-102.4c8.533333-8.533333 8.533333-8.533333 8.533334-17.066667s0-17.066667-8.533334-17.066667c-238.933333-221.866667-597.333333-221.866667-836.266666 0-8.533333 8.533333-8.533333 8.533333-8.533334 17.066667s0 17.066667 8.533334 17.066667L2218.666667 657.066667c8.533333 8.533333 25.6 8.533333 34.133333 0 76.8-68.266667 170.666667-110.933333 281.6-110.933334z m187.733333 238.933334c8.533333 0 8.533333-8.533333 8.533334-17.066667s0-17.066667-8.533334-17.066667c-110.933333-93.866667-273.066667-93.866667-375.466666 0-8.533333 8.533333-8.533333 8.533333-8.533334 17.066667s0 17.066667 8.533334 17.066667l170.666666 170.666666c8.533333 8.533333 8.533333 8.533333 17.066667 8.533334s17.066667 0 17.066667-8.533334l170.666666-170.666666zM85.333333 622.933333h85.333334c51.2 0 85.333333 34.133333 85.333333 85.333334v170.666666c0 51.2-34.133333 85.333333-85.333333 85.333334H85.333333c-51.2 0-85.333333-34.133333-85.333333-85.333334v-170.666666c0-42.666667 34.133333-85.333333 85.333333-85.333334z m401.066667-170.666666h85.333333c51.2 0 85.333333 34.133333 85.333334 85.333333v341.333333c0 51.2-34.133333 85.333333-85.333334 85.333334h-85.333333c-51.2 0-85.333333-34.133333-85.333333-85.333334v-341.333333c0-42.666667 34.133333-85.333333 85.333333-85.333333zM878.933333 256h85.333334c51.2 0 85.333333 34.133333 85.333333 85.333333v537.6c0 51.2-34.133333 85.333333-85.333333 85.333334h-85.333334c-51.2 0-85.333333-34.133333-85.333333-85.333334V341.333333c0-51.2 42.666667-85.333333 85.333333-85.333333zM1280 59.733333h85.333333c51.2 0 85.333333 34.133333 85.333334 85.333334v742.4c0 51.2-34.133333 85.333333-85.333334 85.333333h-85.333333c-51.2 0-85.333333-34.133333-85.333333-85.333333V145.066667c0-51.2 42.666667-85.333333 85.333333-85.333334z"
-            ></path>
-
-
-            <!-- =================================================
-                 实时电量填充
-            ================================================== -->
-
-            <rect
-                id="battery-fill"
-                x="3937"
-                y="212"
-                width="1220"
-                height="608"
-                rx="70"
-            ></rect>
-
-
-        </svg>
-
-    </div>
-
+  </div>
 </div>
 
 
-
-<!-- =========================================================
-     CLOCK
-========================================================= -->
+<!-- Clock -->
 
 <div class="clock-wrap">
 
-    <div
-        class="clock-date"
-        id="clock-date"
-    >
-        9月3日 星期四
-    </div>
+  <div class="clock-date" id="clock-date">
+    9月3日 星期四
+  </div>
 
-
-    <div
-        class="clock-time"
-        id="clock-time"
-    >
-        9:41
-    </div>
+  <div class="clock-time" id="clock-time">
+    9:41
+  </div>
 
 </div>
 
 
-
-<!-- =========================================================
-     BOTTOM CONTROLS
-
-     左：手电筒
-     右：相机
-========================================================= -->
+<!-- Bottom controls -->
 
 <div class="bottom-controls">
 
+  <!-- Flashlight -->
 
-    <!-- =====================================================
-         FLASHLIGHT
-    ====================================================== -->
+  <div class="control-btn" id="flashlight-btn">
 
-    <div
-        class="control-btn"
-        id="flashlight-btn"
-    >
+    <svg viewBox="0 0 1024 1024"
+         version="1.1"
+         xmlns="http://www.w3.org/2000/svg">
 
-        <svg
-            viewBox="0 0 1024 1024"
-            version="1.1"
-            xmlns="http://www.w3.org/2000/svg"
-        >
+      <path d="M634 64H390c-35.2 0-48 28.8-48 64h340c0-35.2-12.8-64-48-64zM392.2 295c15.2 17.6 23.8 40 23.8 63.4v531.8c0 43.8 35.8 69.8 79.8 69.8h32.6c43.8 0 79.8-25.8 79.8-69.8V358.4c0-23.4 8.6-45.6 23.8-63.4 30.8-35.8 50-69 50-135H342c0 70 19.2 99.2 50.2 135z m63.8 181.6c0-31.2 25.2-56.6 56-56.6s56 25.4 56 56.6v70.8c0 31.2-25.2 56.6-56 56.6s-56-25.4-56-56.6v-70.8z"></path>
 
-            <path
-                d="M634 64H390c-35.2 0-48 28.8-48 64h340c0-35.2-12.8-64-48-64zM392.2 295c15.2 17.6 23.8 40 23.8 63.4v531.8c0 43.8 35.8 69.8 79.8 69.8h32.6c43.8 0 79.8-25.8 79.8-69.8V358.4c0-23.4 8.6-45.6 23.8-63.4 30.8-35.8 50-69 50-135H342c0 70 19.2 99.2 50.2 135z m63.8 181.6c0-31.2 25.2-56.6 56-56.6s56 25.4 56 56.6v70.8c0 31.2-25.2 56.6-56 56.6s-56-25.4-56-56.6v-70.8z"
-            ></path>
+      <path d="M512 546m-40 0a40 40 0 1 0 80 0 40 40 0 1 0-80 0Z"></path>
 
-            <path
-                d="M512 546m-40 0a40 40 0 1 0 80 0 40 40 0 1 0-80 0Z"
-            ></path>
+    </svg>
 
-        </svg>
-
-    </div>
+  </div>
 
 
+  <!-- Camera -->
 
-    <!-- =====================================================
-         CAMERA
-    ====================================================== -->
+  <div class="control-btn" id="camera-btn">
 
-    <div
-        class="control-btn"
-        id="camera-btn"
-    >
+    <svg viewBox="0 0 1024 1024"
+         version="1.1"
+         xmlns="http://www.w3.org/2000/svg">
 
-        <svg
-            viewBox="0 0 1024 1024"
-            version="1.1"
-            xmlns="http://www.w3.org/2000/svg"
-        >
+      <path d="M512 550m-115 0a115 115 0 1 0 230 0 115 115 0 1 0-230 0Z"></path>
 
-            <path
-                d="M512 550m-115 0a115 115 0 1 0 230 0 115 115 0 1 0-230 0Z"
-            ></path>
+      <path d="M835 320H726c-9.2 0-17.8-4-24-10.8-56.8-63.6-78.2-85.2-101.4-85.2h-171c-23.4 0-46.4 21.6-103.4 85.4-6 6.8-14.8 10.6-23.8 10.6h-8.2v-16c0-8.8-7.2-16-16-16h-52c-8.8 0-16 7.2-16 16v16h-15C159.8 320 128 346.4 128 381.4v352c0 35 31.8 66.6 67 66.6h640c35.2 0 61-31.6 61-66.6v-352c0-35-25.8-61.4-61-61.4zM520 720.8c-100.6 4.6-183.4-78.2-178.8-178.8 4-87.8 75-158.8 162.8-162.8 100.6-4.6 183.4 78.2 178.8 178.8-4 87.8-75 158.8-162.8 162.8zM704 436c-14.4 0-26-11.6-26-26s11.6-26 26-26 26 11.6 26 26-11.6 26-26 26z"></path>
 
-            <path
-                d="M835 320H726c-9.2 0-17.8-4-24-10.8-56.8-63.6-78.2-85.2-101.4-85.2h-171c-23.4 0-46.4 21.6-103.4 85.4-6 6.8-14.8 10.6-23.8 10.6h-8.2v-16c0-8.8-7.2-16-16-16h-52c-8.8 0-16 7.2-16 16v16h-15C159.8 320 128 346.4 128 381.4v352c0 35 31.8 66.6 67 66.6h640c35.2 0 61-31.6 61-66.6v-352c0-35-25.8-61.4-61-61.4zM520 720.8c-100.6 4.6-183.4-78.2-178.8-178.8 4-87.8 75-158.8 162.8-162.8 100.6-4.6 183.4 78.2 178.8 178.8-4 87.8-75 158.8-162.8 162.8zM704 436c-14.4 0-26-11.6-26-26s11.6-26 26-26 26 11.6 26 26-11.6 26-26 26z"
-            ></path>
+    </svg>
 
-        </svg>
-
-    </div>
+  </div>
 
 </div>
 
 
-
-<!-- =========================================================
-     HOME INDICATOR
-========================================================= -->
-
 <div class="home-indicator"></div>
-
 
 
 <script>
 
 /* =====================================================================
    WALLPAPER LAYER
-
-   Canvas 是当前锁屏壁纸的唯一来源。
-
-   可以使用：
-   Wallpaper.setColor()
-   Wallpaper.setGradient()
-   Wallpaper.setImage()
 ===================================================================== */
 
 const Wallpaper = (() => {
 
+  const canvas = document.getElementById('wallpaper');
 
-    const canvas =
-        document.getElementById('wallpaper');
+  const ctx = canvas.getContext(
+    '2d',
+    { willReadFrequently: true }
+  );
 
+  let current = {
+    type: 'gradient',
+    stops: ['#6a7ea8', '#8b6ea3', '#a8778f']
+  };
 
-    const ctx =
-        canvas.getContext(
-            '2d',
-            {
-                willReadFrequently: true
-            }
-        );
 
+  function resize() {
 
-    let current = {
+    const dpr = window.devicePixelRatio || 1;
 
-        type: 'gradient',
+    canvas.width =
+      Math.round(window.innerWidth * dpr);
 
-        stops: [
-            '#6a7ea8',
-            '#8b6ea3',
-            '#a8778f'
-        ]
+    canvas.height =
+      Math.round(window.innerHeight * dpr);
 
-    };
+    canvas.style.width =
+      window.innerWidth + 'px';
 
+    canvas.style.height =
+      window.innerHeight + 'px';
 
-    /* =====================================================
-       调整 canvas 尺寸
-    ====================================================== */
-
-    function resize() {
-
-        const dpr =
-            window.devicePixelRatio || 1;
-
-
-        canvas.width =
-            Math.round(
-                window.innerWidth * dpr
-            );
-
-
-        canvas.height =
-            Math.round(
-                window.innerHeight * dpr
-            );
-
-
-        canvas.style.width =
-            window.innerWidth + 'px';
-
-
-        canvas.style.height =
-            window.innerHeight + 'px';
-
-
-        ctx.setTransform(
-            dpr,
-            0,
-            0,
-            dpr,
-            0,
-            0
-        );
-
-
-        draw();
-
-    }
-
-
-
-    /* =====================================================
-       图片 COVER
-    ====================================================== */
-
-    function drawImageCover(img) {
-
-        const w =
-            window.innerWidth;
-
-        const h =
-            window.innerHeight;
-
-
-        const scale =
-            Math.max(
-                w / img.width,
-                h / img.height
-            );
-
-
-        const dw =
-            img.width * scale;
-
-
-        const dh =
-            img.height * scale;
-
-
-        ctx.drawImage(
-            img,
-            (w - dw) / 2,
-            (h - dh) / 2,
-            dw,
-            dh
-        );
-
-    }
-
-
-
-    /* =====================================================
-       绘制壁纸
-    ====================================================== */
-
-    function draw() {
-
-        const w =
-            window.innerWidth;
-
-        const h =
-            window.innerHeight;
-
-
-        if (
-            current.type === 'color'
-        ) {
-
-            ctx.fillStyle =
-                current.value;
-
-            ctx.fillRect(
-                0,
-                0,
-                w,
-                h
-            );
-
-        }
-
-
-        else if (
-            current.type === 'gradient'
-        ) {
-
-            const g =
-                ctx.createLinearGradient(
-                    0,
-                    0,
-                    w * 0.35,
-                    h
-                );
-
-
-            const n =
-                current.stops.length;
-
-
-            current.stops.forEach(
-                (c, i) => {
-
-                    g.addColorStop(
-                        i / (n - 1),
-                        c
-                    );
-
-                }
-            );
-
-
-            ctx.fillStyle = g;
-
-
-            ctx.fillRect(
-                0,
-                0,
-                w,
-                h
-            );
-
-        }
-
-
-        else if (
-            current.type === 'image'
-            &&
-            current.img
-        ) {
-
-            drawImageCover(
-                current.img
-            );
-
-        }
-
-
-        AdaptiveTheme.refresh();
-
-    }
-
-
-    window.addEventListener(
-        'resize',
-        resize
+    ctx.setTransform(
+      dpr,
+      0,
+      0,
+      dpr,
+      0,
+      0
     );
 
+    draw();
 
-    return {
-
-        ctx,
-
-        setColor(hex) {
-
-            current = {
-
-                type: 'color',
-
-                value: hex
-
-            };
-
-            draw();
-
-        },
+  }
 
 
-        setGradient(stops) {
+  function drawImageCover(img) {
 
-            current = {
+    const w = window.innerWidth;
+    const h = window.innerHeight;
 
-                type: 'gradient',
+    const scale =
+      Math.max(
+        w / img.width,
+        h / img.height
+      );
 
-                stops
+    const dw = img.width * scale;
+    const dh = img.height * scale;
 
-            };
+    ctx.drawImage(
+      img,
+      (w - dw) / 2,
+      (h - dh) / 2,
+      dw,
+      dh
+    );
 
-            draw();
-
-        },
-
-
-        setImage(imgEl) {
-
-            current = {
-
-                type: 'image',
-
-                img: imgEl
-
-            };
-
-            draw();
-
-        },
+  }
 
 
-        init() {
+  function draw() {
 
-            resize();
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+
+
+    if(current.type === 'color'){
+
+      ctx.fillStyle =
+        current.value;
+
+      ctx.fillRect(
+        0,
+        0,
+        w,
+        h
+      );
+
+    }
+
+    else if(current.type === 'gradient'){
+
+      const g =
+        ctx.createLinearGradient(
+          0,
+          0,
+          w * 0.35,
+          h
+        );
+
+      const n =
+        current.stops.length;
+
+      current.stops.forEach(
+        (c, i) => {
+
+          g.addColorStop(
+            i / (n - 1),
+            c
+          );
 
         }
+      );
 
-    };
+      ctx.fillStyle = g;
 
+      ctx.fillRect(
+        0,
+        0,
+        w,
+        h
+      );
+
+    }
+
+    else if(
+      current.type === 'image' &&
+      current.img
+    ){
+
+      drawImageCover(
+        current.img
+      );
+
+    }
+
+    AdaptiveTheme.refresh();
+
+  }
+
+
+  window.addEventListener(
+    'resize',
+    resize
+  );
+
+
+  return {
+
+    ctx,
+
+    setColor(hex){
+
+      current = {
+        type: 'color',
+        value: hex
+      };
+
+      draw();
+
+    },
+
+    setGradient(stops){
+
+      current = {
+        type: 'gradient',
+        stops
+      };
+
+      draw();
+
+    },
+
+    setImage(imgEl){
+
+      current = {
+        type: 'image',
+        img: imgEl
+      };
+
+      draw();
+
+    },
+
+    init(){
+
+      resize();
+
+    }
+
+  };
 
 })();
-
 
 
 /* =====================================================================
    ADAPTIVE THEME ENGINE
-
-   根据壁纸亮度自动判断：
-
-   深色壁纸：
-   → 白色状态栏
-   → 白色按钮图标
-   → 白色 Home Indicator
-
-   浅色壁纸：
-   → 黑色状态栏
-   → 黑色按钮图标
-   → 黑色 Home Indicator
 ===================================================================== */
 
 const AdaptiveTheme = (() => {
 
-
-    const LIGHT_THRESHOLD = 150;
-
+  const LIGHT_THRESHOLD = 150;
 
 
-    function regionLuminance(
-        xRatio,
-        yRatio,
-        wRatio,
-        hRatio
-    ) {
+  function regionLuminance(
+    xRatio,
+    yRatio,
+    wRatio,
+    hRatio
+  ){
+
+    const w =
+      window.innerWidth;
+
+    const h =
+      window.innerHeight;
+
+    const x =
+      Math.max(
+        0,
+        Math.floor(
+          xRatio * w
+        )
+      );
+
+    const y =
+      Math.max(
+        0,
+        Math.floor(
+          yRatio * h
+        )
+      );
+
+    const rw =
+      Math.max(
+        1,
+        Math.min(
+          w - x,
+          Math.floor(
+            wRatio * w
+          )
+        )
+      );
+
+    const rh =
+      Math.max(
+        1,
+        Math.min(
+          h - y,
+          Math.floor(
+            hRatio * h
+          )
+        )
+      );
 
 
-        const w =
-            window.innerWidth;
+    let data;
 
 
-        const h =
-            window.innerHeight;
+    try{
 
+      data =
+        Wallpaper.ctx
+        .getImageData(
+          x,
+          y,
+          rw,
+          rh
+        ).data;
 
-        const x =
-            Math.max(
-                0,
-                Math.floor(
-                    xRatio * w
-                )
-            );
+    }
 
+    catch(e){
 
-        const y =
-            Math.max(
-                0,
-                Math.floor(
-                    yRatio * h
-                )
-            );
-
-
-        const rw =
-            Math.max(
-                1,
-                Math.min(
-                    w - x,
-                    Math.floor(
-                        wRatio * w
-                    )
-                )
-            );
-
-
-        const rh =
-            Math.max(
-                1,
-                Math.min(
-                    h - y,
-                    Math.floor(
-                        hRatio * h
-                    )
-                )
-            );
-
-
-        let data;
-
-
-        try {
-
-            data =
-                Wallpaper.ctx
-                .getImageData(
-                    x,
-                    y,
-                    rw,
-                    rh
-                ).data;
-
-        }
-
-        catch(e) {
-
-            return 128;
-
-        }
-
-
-        let total = 0;
-
-        let count = 0;
-
-
-        for (
-            let i = 0;
-            i < data.length;
-            i += 4
-        ) {
-
-            total +=
-
-                0.299 * data[i] +
-
-                0.587 * data[i + 1] +
-
-                0.114 * data[i + 2];
-
-
-            count++;
-
-        }
-
-
-        return count
-            ? total / count
-            : 128;
+      return 128;
 
     }
 
 
-
-    function refresh() {
-
-
-        const statusLum =
-            regionLuminance(
-                0,
-                0,
-                1,
-                0.09
-            );
+    let total = 0;
+    let count = 0;
 
 
-        const bottomLum =
-            regionLuminance(
-                0,
-                0.82,
-                1,
-                0.18
-            );
+    for(
+      let i = 0;
+      i < data.length;
+      i += 4
+    ){
 
+      total +=
+        0.299 * data[i] +
+        0.587 * data[i + 1] +
+        0.114 * data[i + 2];
 
-        document
-            .getElementById(
-                'status-bar'
-            )
-            .style
-            .color =
-
-            statusLum >
-            LIGHT_THRESHOLD
-
-            ? '#000'
-
-            : '#fff';
-
-
-
-        const onLight =
-            bottomLum >
-            LIGHT_THRESHOLD;
-
-
-
-        document
-            .querySelectorAll(
-                '.control-btn'
-            )
-            .forEach(
-                btn => {
-
-                    btn.classList.toggle(
-                        'on-light',
-                        onLight
-                    );
-
-                }
-            );
-
-
-
-        document
-            .querySelector(
-                '.home-indicator'
-            )
-            .classList.toggle(
-                'on-light',
-                onLight
-            );
+      count++;
 
     }
 
 
-    return {
+    return count
+      ? total / count
+      : 128;
 
-        refresh
+  }
 
-    };
+
+  function refresh(){
+
+    const statusLum =
+      regionLuminance(
+        0,
+        0,
+        1,
+        0.09
+      );
+
+
+    const bottomLum =
+      regionLuminance(
+        0,
+        0.82,
+        1,
+        0.18
+      );
+
+
+    document
+      .getElementById(
+        'status-bar'
+      )
+      .style.color =
+        statusLum >
+        LIGHT_THRESHOLD
+          ? '#000'
+          : '#fff';
+
+
+    const onLight =
+      bottomLum >
+      LIGHT_THRESHOLD;
+
+
+    document
+      .querySelectorAll(
+        '.control-btn'
+      )
+      .forEach(
+        btn =>
+          btn.classList.toggle(
+            'on-light',
+            onLight
+          )
+      );
+
+
+    document
+      .querySelector(
+        '.home-indicator'
+      )
+      .classList.toggle(
+        'on-light',
+        onLight
+      );
+
+  }
+
+
+  return {
+    refresh
+  };
 
 })();
-
 
 
 /* =====================================================================
    LUNAR CALENDAR
-   1900 - 2100
 ===================================================================== */
 
 const Lunar = (() => {
 
+  const lunarInfo = [
 
-    const lunarInfo = [
+    0x04bd8,0x04ae0,0x0a570,0x054d5,0x0d260,
+    0x0d950,0x16554,0x056a0,0x09ad0,0x055d2,
 
-      0x04bd8,0x04ae0,0x0a570,0x054d5,0x0d260,
-      0x0d950,0x16554,0x056a0,0x09ad0,0x055d2,
+    0x04ae0,0x0a5b6,0x0a4d0,0x0d250,0x1d255,
+    0x0b540,0x0d6a0,0x0ada2,0x095b0,0x14977,
 
-      0x04ae0,0x0a5b6,0x0a4d0,0x0d250,0x1d255,
-      0x0b540,0x0d6a0,0x0ada2,0x095b0,0x14977,
+    0x04970,0x0a4b0,0x0b4b5,0x06a50,0x06d40,
+    0x1ab54,0x02b60,0x09570,0x052f2,0x04970,
 
-      0x04970,0x0a4b0,0x0b4b5,0x06a50,0x06d40,
-      0x1ab54,0x02b60,0x09570,0x052f2,0x04970,
+    0x06566,0x0d4a0,0x0ea50,0x06e95,0x05ad0,
+    0x02b60,0x186e3,0x092e0,0x1c8d7,0x0c950,
 
-      0x06566,0x0d4a0,0x0ea50,0x06e95,0x05ad0,
-      0x02b60,0x186e3,0x092e0,0x1c8d7,0x0c950,
+    0x0d4a0,0x1d8a6,0x0b550,0x056a0,0x1a5b4,
+    0x025d0,0x092d0,0x0d2b2,0x0a950,0x0b557,
 
-      0x0d4a0,0x1d8a6,0x0b550,0x056a0,0x1a5b4,
-      0x025d0,0x092d0,0x0d2b2,0x0a950,0x0b557,
+    0x06ca0,0x0b550,0x15355,0x04da0,0x0a5b0,
+    0x14573,0x052b0,0x0a9a8,0x0e950,0x06aa0,
 
-      0x06ca0,0x0b550,0x15355,0x04da0,0x0a5b0,
-      0x14573,0x052b0,0x0a9a8,0x0e950,0x06aa0,
+    0x0aea6,0x0ab50,0x04b60,0x0aae4,0x0a570,
+    0x05260,0x0f263,0x0d950,0x05b57,0x056a0,
 
-      0x0aea6,0x0ab50,0x04b60,0x0aae4,0x0a570,
-      0x05260,0x0f263,0x0d950,0x05b57,0x056a0,
+    0x096d0,0x04dd5,0x04ad0,0x0a4d0,0x0d4d4,
+    0x0d250,0x0d558,0x0b540,0x0b6a0,0x195a6,
 
-      0x096d0,0x04dd5,0x04ad0,0x0a4d0,0x0d4d4,
-      0x0d250,0x0d558,0x0b540,0x0b6a0,0x195a6,
+    0x095b0,0x049b0,0x0a974,0x0a4b0,0x0b27a,
+    0x06a50,0x06d40,0x0af46,0x0ab60,0x09570,
 
-      0x095b0,0x049b0,0x0a974,0x0a4b0,0x0b27a,
-      0x06a50,0x06d40,0x0af46,0x0ab60,0x09570,
+    0x04af5,0x04970,0x064b0,0x074a3,0x0ea50,
+    0x06b58,0x055c0,0x0ab60,0x096d5,0x092e0,
 
-      0x04af5,0x04970,0x064b0,0x074a3,0x0ea50,
-      0x06b58,0x055c0,0x0ab60,0x096d5,0x092e0,
+    0x0c960,0x0d954,0x0d4a0,0x0da50,0x07552,
+    0x056a0,0x0abb7,0x025d0,0x092d0,0x0cab5,
 
-      0x0c960,0x0d954,0x0d4a0,0x0da50,0x07552,
-      0x056a0,0x0abb7,0x025d0,0x092d0,0x0cab5,
+    0x0a950,0x0b4a0,0x0baa4,0x0ad50,0x055d9,
+    0x04ba0,0x0a5b0,0x15176,0x052b0,0x0a930,
 
-      0x0a950,0x0b4a0,0x0baa4,0x0ad50,0x055d9,
-      0x04ba0,0x0a5b0,0x15176,0x052b0,0x0a930,
+    0x07954,0x06aa0,0x0ad50,0x05b52,0x04b60,
+    0x0a6e6,0x0a4e0,0x0d260,0x0ea65,0x0d530,
 
-      0x07954,0x06aa0,0x0ad50,0x05b52,0x04b60,
-      0x0a6e6,0x0a4e0,0x0d260,0x0ea65,0x0d530,
+    0x05aa0,0x076a3,0x096d0,0x04afb,0x04ad0,
+    0x0a4d0,0x1d0b6,0x0d250,0x0d520,0x0dd45,
 
-      0x05aa0,0x076a3,0x096d0,0x04afb,0x04ad0,
-      0x0a4d0,0x1d0b6,0x0d250,0x0d520,0x0dd45,
+    0x0b5a0,0x056d0,0x055b2,0x049b0,0x0a577,
+    0x0a4b0,0x0aa50,0x1b255,0x06d20,0x0ada0,
 
-      0x0b5a0,0x056d0,0x055b2,0x049b0,0x0a577,
-      0x0a4b0,0x0aa50,0x1b255,0x06d20,0x0ada0,
+    0x14b63,0x09370,0x049f8,0x04970,0x064b0,
+    0x168a6,0x0ea50,0x06b20,0x1a6c4,0x0aae0,
 
-      0x14b63,0x09370,0x049f8,0x04970,0x064b0,
-      0x168a6,0x0ea50,0x06b20,0x1a6c4,0x0aae0,
+    0x0a2e0,0x0d2e3,0x0c960,0x0d557,0x0d4a0,
+    0x0da50,0x05d55,0x056a0,0x0a6d0,0x055d4,
 
-      0x0a2e0,0x0d2e3,0x0c960,0x0d557,0x0d4a0,
-      0x0da50,0x05d55,0x056a0,0x0a6d0,0x055d4,
+    0x052d0,0x0a9b8,0x0a950,0x0b4a0,0x0b6a6,
+    0x0ad50,0x055a0,0x0aba4,0x0a5b0,0x052b0,
 
-      0x052d0,0x0a9b8,0x0a950,0x0b4a0,0x0b6a6,
-      0x0ad50,0x055a0,0x0aba4,0x0a5b0,0x052b0,
+    0x0b273,0x06930,0x07337,0x06aa0,0x0ad50,
+    0x14b55,0x04b60,0x0a570,0x054e4,0x0d160,
 
-      0x0b273,0x06930,0x07337,0x06aa0,0x0ad50,
-      0x14b55,0x04b60,0x0a570,0x054e4,0x0d160,
+    0x0e968,0x0d520,0x0daa0,0x16aa6,0x056d0,
+    0x04ae0,0x0a9d4,0x0a2d0,0x0d150,0x0f252,
 
-      0x0e968,0x0d520,0x0daa0,0x16aa6,0x056d0,
-      0x04ae0,0x0a9d4,0x0a2d0,0x0d150,0x0f252,
+    0x0d520
 
-      0x0d520
-
-    ];
-
+  ];
 
 
-    const Gan = [
-        '甲','乙','丙','丁','戊',
-        '己','庚','辛','壬','癸'
-    ];
+  const Gan =
+    ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+
+  const Zhi =
+    ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+
+  const nStr1 =
+    ['日','一','二','三','四','五','六','七','八','九','十'];
+
+  const nStr2 =
+    ['初','十','廿','卅'];
+
+  const nStr3 =
+    ['正','二','三','四','五','六','七','八','九','十','冬','腊'];
 
 
-    const Zhi = [
-        '子','丑','寅','卯','辰','巳',
-        '午','未','申','酉','戌','亥'
-    ];
+  function leapMonth(y){
+
+    return lunarInfo[y - 1900] & 0xf;
+
+  }
 
 
-    const nStr1 = [
-        '日','一','二','三','四',
-        '五','六','七','八','九','十'
-    ];
+  function leapDays(y){
 
-
-    const nStr2 = [
-        '初','十','廿','卅'
-    ];
-
-
-    const nStr3 = [
-        '正','二','三','四','五','六',
-        '七','八','九','十','冬','腊'
-    ];
-
-
-
-    function leapMonth(y) {
-
-        return lunarInfo[y - 1900] & 0xf;
-
-    }
-
-
-    function leapDays(y) {
-
-        return leapMonth(y)
-
-            ? (
-                (lunarInfo[y - 1900] & 0x10000)
-                ? 30
-                : 29
-            )
-
-            : 0;
-
-    }
-
-
-    function monthDays(y,m) {
-
-        return (
-            lunarInfo[y - 1900]
-            &
-            (0x10000 >> m)
+    return leapMonth(y)
+      ? (
+          (lunarInfo[y - 1900] & 0x10000)
+          ? 30
+          : 29
         )
-        ? 30
-        : 29;
+      : 0;
 
-    }
-
-
-    function lYearDays(y) {
-
-        let sum = 348;
+  }
 
 
-        for (
-            let i = 0x8000;
-            i > 0x8;
-            i >>= 1
-        ) {
+  function monthDays(y,m){
 
-            sum +=
-                (
-                    lunarInfo[y - 1900]
-                    &
-                    i
-                )
-                ? 1
-                : 0;
+    return (
+      lunarInfo[y - 1900] &
+      (0x10000 >> m)
+    )
+      ? 30
+      : 29;
 
-        }
+  }
 
 
-        return sum + leapDays(y);
+  function lYearDays(y){
 
-    }
+    let sum = 348;
 
+    for(
+      let i = 0x8000;
+      i > 0x8;
+      i >>= 1
+    ){
 
-    function toGanZhiYear(y) {
-
-        let ganKey =
-            (y - 3) % 10;
-
-
-        let zhiKey =
-            (y - 3) % 12;
-
-
-        if (ganKey === 0)
-            ganKey = 10;
-
-
-        if (zhiKey === 0)
-            zhiKey = 12;
-
-
-        return Gan[ganKey - 1]
-            +
-            Zhi[zhiKey - 1];
-
-    }
-
-
-    function toChinaMonth(m) {
-
-        return nStr3[m - 1]
-            + '月';
-
-    }
-
-
-    function toChinaDay(d) {
-
-        if (d === 10)
-            return '初十';
-
-
-        if (d === 20)
-            return '二十';
-
-
-        if (d === 30)
-            return '三十';
-
-
-        return nStr2[Math.floor(d / 10)]
-            +
-            nStr1[d % 10];
-
-    }
-
-
-
-    function solar2lunar(y,m,d) {
-
-        if (
-            y < 1900 ||
-            y > 2100
+      sum +=
+        (
+          lunarInfo[y - 1900] & i
         )
-            return null;
-
-
-        const objDate =
-            new Date(
-                y,
-                m - 1,
-                d
-            );
-
-
-        y =
-            objDate.getFullYear();
-
-
-        m =
-            objDate.getMonth() + 1;
-
-
-        d =
-            objDate.getDate();
-
-
-
-        let offset =
-            Math.round(
-                (
-                    Date.UTC(
-                        y,
-                        m - 1,
-                        d
-                    )
-                    -
-                    Date.UTC(
-                        1900,
-                        0,
-                        31
-                    )
-                )
-                /
-                86400000
-            );
-
-
-
-        let i,
-            temp = 0;
-
-
-
-        for (
-            i = 1900;
-            i < 2101 &&
-            offset > 0;
-            i++
-        ) {
-
-            temp =
-                lYearDays(i);
-
-            offset -= temp;
-
-        }
-
-
-
-        if (offset < 0) {
-
-            offset += temp;
-
-            i--;
-
-        }
-
-
-
-        const year = i;
-
-
-        const leap =
-            leapMonth(year);
-
-
-        let isLeap = false;
-
-
-
-        for (
-            i = 1;
-            i < 13 &&
-            offset > 0;
-            i++
-        ) {
-
-            if (
-                leap > 0 &&
-                i === (leap + 1) &&
-                !isLeap
-            ) {
-
-                --i;
-
-                isLeap = true;
-
-                temp =
-                    leapDays(year);
-
-            }
-
-            else {
-
-                temp =
-                    monthDays(
-                        year,
-                        i
-                    );
-
-            }
-
-
-
-            if (
-                isLeap &&
-                i === (leap + 1)
-            ) {
-
-                isLeap = false;
-
-            }
-
-
-
-            offset -= temp;
-
-        }
-
-
-
-        if (
-            offset === 0 &&
-            leap > 0 &&
-            i === leap + 1
-        ) {
-
-            if (isLeap) {
-
-                isLeap = false;
-
-            }
-
-            else {
-
-                isLeap = true;
-
-                --i;
-
-            }
-
-        }
-
-
-
-        if (offset < 0) {
-
-            offset += temp;
-
-            --i;
-
-        }
-
-
-
-        const month = i;
-
-        const day =
-            offset + 1;
-
-
-
-        return {
-
-            ganZhiYear:
-                toGanZhiYear(year),
-
-            monthCn:
-                (isLeap ? '闰' : '')
-                +
-                toChinaMonth(month),
-
-            dayCn:
-                toChinaDay(day)
-
-        };
+          ? 1
+          : 0;
 
     }
+
+    return sum + leapDays(y);
+
+  }
+
+
+  function toGanZhiYear(y){
+
+    let ganKey =
+      (y - 3) % 10;
+
+    let zhiKey =
+      (y - 3) % 12;
+
+
+    if(ganKey === 0)
+      ganKey = 10;
+
+    if(zhiKey === 0)
+      zhiKey = 12;
+
+
+    return (
+      Gan[ganKey - 1] +
+      Zhi[zhiKey - 1]
+    );
+
+  }
+
+
+  function toChinaMonth(m){
+
+    return nStr3[m - 1] + '月';
+
+  }
+
+
+  function toChinaDay(d){
+
+    if(d === 10)
+      return '初十';
+
+    if(d === 20)
+      return '二十';
+
+    if(d === 30)
+      return '三十';
+
+
+    return (
+      nStr2[Math.floor(d / 10)] +
+      nStr1[d % 10]
+    );
+
+  }
+
+
+  function solar2lunar(y,m,d){
+
+    if(
+      y < 1900 ||
+      y > 2100
+    ){
+
+      return null;
+
+    }
+
+
+    const objDate =
+      new Date(
+        y,
+        m - 1,
+        d
+      );
+
+
+    y =
+      objDate.getFullYear();
+
+    m =
+      objDate.getMonth() + 1;
+
+    d =
+      objDate.getDate();
+
+
+    let offset =
+      Math.round(
+        (
+          Date.UTC(
+            y,
+            m - 1,
+            d
+          ) -
+          Date.UTC(
+            1900,
+            0,
+            31
+          )
+        ) / 86400000
+      );
+
+
+    let i;
+    let temp = 0;
+
+
+    for(
+      i = 1900;
+      i < 2101 &&
+      offset > 0;
+      i++
+    ){
+
+      temp =
+        lYearDays(i);
+
+      offset -= temp;
+
+    }
+
+
+    if(offset < 0){
+
+      offset += temp;
+
+      i--;
+
+    }
+
+
+    const year = i;
+
+    const leap =
+      leapMonth(year);
+
+    let isLeap = false;
+
+
+    for(
+      i = 1;
+      i < 13 &&
+      offset > 0;
+      i++
+    ){
+
+      if(
+        leap > 0 &&
+        i === (leap + 1) &&
+        !isLeap
+      ){
+
+        --i;
+
+        isLeap = true;
+
+        temp =
+          leapDays(year);
+
+      }
+
+      else{
+
+        temp =
+          monthDays(
+            year,
+            i
+          );
+
+      }
+
+
+      if(
+        isLeap &&
+        i === (leap + 1)
+      ){
+
+        isLeap = false;
+
+      }
+
+
+      offset -= temp;
+
+    }
+
+
+    if(
+      offset === 0 &&
+      leap > 0 &&
+      i === leap + 1
+    ){
+
+      if(isLeap){
+
+        isLeap = false;
+
+      }
+
+      else{
+
+        isLeap = true;
+
+        --i;
+
+      }
+
+    }
+
+
+    if(offset < 0){
+
+      offset += temp;
+
+      --i;
+
+    }
+
+
+    const month = i;
+
+    const day =
+      offset + 1;
 
 
     return {
 
-        solar2lunar
+      ganZhiYear:
+        toGanZhiYear(year),
+
+      monthCn:
+        (
+          isLeap
+            ? '闰'
+            : ''
+        ) +
+        toChinaMonth(month),
+
+      dayCn:
+        toChinaDay(day)
 
     };
+
+  }
+
+
+  return {
+    solar2lunar
+  };
 
 })();
 
 
-
 /* =====================================================================
-   REAL DATE / TIME
+   CLOCK / DATE
 ===================================================================== */
 
 const weekDays = [
 
-    '星期日',
-    '星期一',
-    '星期二',
-    '星期三',
-    '星期四',
-    '星期五',
-    '星期六'
+  '星期日',
+  '星期一',
+  '星期二',
+  '星期三',
+  '星期四',
+  '星期五',
+  '星期六'
 
 ];
 
 
+function updateDateTime(){
 
-function updateDateTime() {
-
-
-    const now =
-        new Date();
+  const now =
+    new Date();
 
 
-    const hh =
-        String(
-            now.getHours()
-        ).padStart(
-            2,
-            '0'
-        );
+  const hh =
+    String(
+      now.getHours()
+    ).padStart(
+      2,
+      '0'
+    );
 
 
-    const mm =
-        String(
-            now.getMinutes()
-        ).padStart(
-            2,
-            '0'
-        );
+  const mm =
+    String(
+      now.getMinutes()
+    ).padStart(
+      2,
+      '0'
+    );
 
 
-    const timeStr =
-        `${hh}:${mm}`;
+  const timeStr =
+    `${hh}:${mm}`;
 
 
-
-    /* 状态栏时间 */
-
-    document
-        .getElementById(
-            'status-time'
-        )
-        .textContent =
-            timeStr;
+  document
+    .getElementById(
+      'status-time'
+    )
+    .textContent =
+      timeStr;
 
 
-
-    /* 锁屏大时间 */
-
-    document
-        .getElementById(
-            'clock-time'
-        )
-        .textContent =
-            timeStr;
+  document
+    .getElementById(
+      'clock-time'
+    )
+    .textContent =
+      timeStr;
 
 
-
-    /* 农历 */
-
-    const lunar =
-        Lunar.solar2lunar(
-            now.getFullYear(),
-            now.getMonth() + 1,
-            now.getDate()
-        );
+  const lunar =
+    Lunar.solar2lunar(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      now.getDate()
+    );
 
 
+  document
+    .getElementById(
+      'clock-date'
+    )
+    .textContent = lunar
 
-    document
-        .getElementById(
-            'clock-date'
-        )
-        .textContent =
+      ? `${now.getMonth() + 1}月${now.getDate()}日 ${weekDays[now.getDay()]} · ${lunar.ganZhiYear}年 ${lunar.monthCn}${lunar.dayCn}`
 
-        lunar
-
-        ?
-
-        `${now.getMonth() + 1}月${now.getDate()}日 ${weekDays[now.getDay()]} · ${lunar.ganZhiYear}年 ${lunar.monthCn}${lunar.dayCn}`
-
-        :
-
-        `${now.getMonth() + 1}月${now.getDate()}日 ${weekDays[now.getDay()]}`;
+      : `${now.getMonth() + 1}月${now.getDate()}日 ${weekDays[now.getDay()]}`;
 
 }
 
 
-
 /* =====================================================================
-   BATTERY
-
-   尽可能读取真实设备电量。
-
-   Android / Chromium 支持 Battery Status API 时：
-   → 实时同步
-
-   不支持时：
-   → 保留电池图标，不伪造设备电量
+   BATTERY — REAL DEVICE BATTERY
 ===================================================================== */
 
-fu
+function renderBattery(
+  level,
+  charging
+){
+
+  const fillEl =
+    document.getElementById(
+      'battery-fill'
+    );
+
+
+  if(!fillEl)
+    return;
+
+
+  const maxWidth = 1220;
+
+  const minWidth = 60;
+
+
+  const width =
+    Math.max(
+      minWidth,
+      Math.round(
+        level * maxWidth
+      )
+    );
+
+
+  fillEl.setAttribute(
+    'width',
+    width
+  );
+
+
+  fillEl.style.fill =
+    charging
+      ? '#30d158'
+      : '';
+
+}
+
+
+async function initBattery(){
+
+  if(
+    'getBattery' in navigator
+  ){
+
+    try{
+
+      const battery =
+        await navigator.getBattery();
+
+
+      const update = () => {
+
+        renderBattery(
+          battery.level,
+          battery.charging
+        );
+
+      };
+
+
+      battery.addEventListener(
+        'levelchange',
+        update
+      );
+
+
+      battery.addEventListener(
+        'chargingchange',
+        update
+      );
+
+
+      update();
+
+    }
+
+    catch(e){
+
+      renderBattery(
+        1,
+        false
+      );
+
+    }
+
+  }
+
+  else{
+
+    renderBattery(
+      1,
+      false
+    );
+
+  }
+
+}
+
+
+/* =====================================================================
+   START
+===================================================================== */
+
+Wallpaper.init();
+
+updateDateTime();
+
+setInterval(
+  updateDateTime,
+  1000
+);
+
+initBattery();
+
+</script>
+
+</body>
+</html>
