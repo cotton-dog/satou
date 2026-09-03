@@ -1,11 +1,10 @@
 const CACHE_NAME = "satou-v1";
 
-const CACHE_FILES = [
+const FILES_TO_CACHE = [
     "./",
     "./index.html",
-    "./manifest.webmanifest",
-    "./icons/icon-192.png",
-    "./icons/icon-512.png"
+    "./lockscreen.html",
+    "./manifest.webmanifest"
 ];
 
 
@@ -13,101 +12,62 @@ const CACHE_FILES = [
    安装
 ========================= */
 
-self.addEventListener(
-    "install",
-    event => {
+self.addEventListener("install", event => {
 
-        event.waitUntil(
+    event.waitUntil(
 
-            caches
-                .open(CACHE_NAME)
-                .then(cache => {
+        caches.open(CACHE_NAME)
+        .then(cache => cache.addAll(FILES_TO_CACHE))
 
-                    return cache.addAll(
-                        CACHE_FILES
-                    );
+    );
 
-                })
+    self.skipWaiting();
 
-        );
-
-        self.skipWaiting();
-
-    }
-);
+});
 
 
 /* =========================
    激活
 ========================= */
 
-self.addEventListener(
-    "activate",
-    event => {
+self.addEventListener("activate", event => {
 
-        event.waitUntil(
+    event.waitUntil(
 
-            caches
-                .keys()
-                .then(keys => {
+        caches.keys().then(keys =>
 
-                    return Promise.all(
+            Promise.all(
 
-                        keys.map(key => {
+                keys
+                .filter(key => key !== CACHE_NAME)
+                .map(key => caches.delete(key))
 
-                            if(
-                                key !== CACHE_NAME
-                            ){
+            )
 
-                                return caches.delete(
-                                    key
-                                );
+        )
 
-                            }
+    );
 
-                            return null;
+    self.clients.claim();
 
-                        })
-
-                    );
-
-                })
-
-        );
-
-        self.clients.claim();
-
-    }
-);
+});
 
 
 /* =========================
-   网络请求
+   请求
 ========================= */
 
-self.addEventListener(
-    "fetch",
-    event => {
+self.addEventListener("fetch", event => {
 
-        event.respondWith(
+    event.respondWith(
 
-            caches
-                .match(event.request)
-                .then(cached => {
+        caches.match(event.request)
+        .then(cached => {
 
-                    if(cached){
+            return cached || fetch(event.request);
 
-                        return cached;
+        })
 
-                    }
+    );
 
-                    return fetch(
-                        event.request
-                    );
-
-                })
-
-        );
-
-    }
-);
+});
