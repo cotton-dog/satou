@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>桌面</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    position: relative;
+    background: #000;
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC", "Segoe UI", sans-serif;
+  }
+
+  /* ================= WALLPAPER LAYER ================= */
+
+  #wallpaper {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+
+  /* ================= STATUS BAR (same component as lock screen) ================= */
+
+  .status-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    padding-top: calc(env(safe-area-inset-top) + 14px);
+    z-index: 10;
+    color: #fff;
+    transition: color 0.4s ease;
+  }
+
+  .status-time {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    color: inherit;
+  }
+
+  .status-icons {
+    display: flex;
+    align-items: center;
+  }
+
+  .status-icons svg {
+    width: 78px;
+    height: auto;
+    display: block;
+  }
+
+  .status-icons svg path {
+    fill: currentColor;
+  }
+
+  #battery-fill {
+    fill: currentColor;
+    transition: width 0.4s ease, fill 0.4s ease;
+  }
+
+  /* ================= APP GRID ================= */
+
+  .app-grid {
+    position: fixed;
+    top: calc(env(safe-area-inset-top) + 90px);
+    left: 0;
+    width: 100%;
+    padding: 0 22px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    row-gap: 26px;
+    column-gap: 10px;
+    z-index: 5;
+  }
+
+  .app-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .app-icon .glyph {
+    width: 58px;
+    height: 58px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 22px;
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  }
+
+  .app-icon .label {
+    color: #fff;
+    font-size: 11.5px;
+    font-weight: 500;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.35);
+    max-width: 68px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ================= PAGE DOTS ================= */
+
+  .page-dots {
+    position: fixed;
+    bottom: calc(env(safe-area-inset-bottom) + 118px);
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 7px;
+    z-index: 5;
+  }
+
+  .page-dots .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.4);
+  }
+
+  .page-dots .dot.active {
+    background: rgba(255,255,255,0.95);
+  }
+
+  /* ================= DOCK ================= */
+
+  .dock {
+    position: fixed;
+    bottom: calc(env(safe-area-inset-bottom) + 26px);
+    left: 22px;
+    right: 22px;
+    height: 86px;
+    border-radius: 30px;
+    background: rgba(255,255,255,0.22);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    z-index: 10;
+  }
+
+  .dock .glyph {
+    width: 58px;
+    height: 58px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 22px;
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  }
+
+  /* ---------- Home indicator ---------- */
+
+  .home-indicator {
+    position: fixed;
+    bottom: calc(env(safe-area-inset-bottom) + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 134px;
+    height: 5px;
+    background: #fff;
+    border-radius: 3px;
+    opacity: 0.9;
+    z-index: 10;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="wallpaper"></canvas>
+
+<!-- Status bar -->
+
+<div class="status-bar" id="status-bar">
+
+  <div class="status-time" id="status-time">9:41</div>
+
+  <div class="status-icons">
+
+    <svg id="status-svg"
+         viewBox="0 0 5717 1024"
+         version="1.1"
+         xmlns="http://www.w3.org/2000/svg">
+
+      <path d="M5196.8 998.4H3908.266667c-93.866667 0-128-8.533333-179.2-34.133333-34.133333-17.066667-68.266667-51.2-85.333334-85.333334-25.6-42.666667-34.133333-85.333333-34.133333-179.2V324.266667c0-93.866667 8.533333-136.533333 34.133333-179.2 17.066667-34.133333 51.2-68.266667 85.333334-85.333334 42.666667-25.6 85.333333-34.133333 179.2-34.133333H5205.333333c93.866667 0 128 8.533333 179.2 34.133333 34.133333 17.066667 68.266667 51.2 85.333334 85.333334 25.6 42.666667 34.133333 85.333333 34.133333 179.2v384c0 93.866667-8.533333 136.533333-34.133333 179.2-17.066667 34.133333-51.2 68.266667-85.333334 85.333333-51.2 17.066667-93.866667 25.6-187.733333 25.6zM3908.266667 110.933333c-93.866667 0-110.933333 8.533333-136.533334 17.066667-25.6 17.066667-42.666667 34.133333-51.2 59.733333-17.066667 17.066667-25.6 42.666667-25.6 136.533334v384c0 93.866667 8.533333 110.933333 17.066667 136.533333 8.533333 25.6 25.6 42.666667 51.2 51.2 25.6 8.533333 42.666667 17.066667 136.533333 17.066667h1297.066667c93.866667 0 110.933333-8.533333 136.533333-17.066667 25.6-8.533333 42.666667-25.6 51.2-51.2 17.066667-25.6 25.6-51.2 25.6-136.533333V324.266667c0-85.333333-8.533333-110.933333-17.066667-136.533334-25.6-25.6-51.2-42.666667-85.333333-51.2-25.6-8.533333-42.666667-17.066667-136.533333-17.066666H3908.266667z"
+            opacity=".35"></path>
+
+      <path d="M5572.266667 341.333333v341.333334c68.266667-25.6 110.933333-93.866667 110.933333-170.666667s-42.666667-145.066667-110.933333-170.666667"
+            opacity=".4"></path>
+
+      <path d="M2534.4 221.866667c187.733333 0 375.466667 76.8 512 204.8 8.533333 8.533333 25.6 8.533333 34.133333 0l102.4-102.4c8.533333-8.533333 8.533333-8.533333 8.533334-17.066667s0-17.066667-8.533334-17.066667c-358.4-349.866667-930.133333-349.866667-1288.533333 0-17.066667 0-17.066667 8.533333-17.066667 17.066667s0 17.066667 8.533334 17.066667L1988.266667 426.666667c8.533333 8.533333 25.6 8.533333 34.133333 0 136.533333-128 315.733333-204.8 512-204.8z m0 324.266666c102.4 0 204.8 42.666667 281.6 110.933334 8.533333 8.533333 25.6 8.533333 34.133333 0l102.4-102.4c8.533333-8.533333 8.533333-8.533333 8.533334-17.066667s0-17.066667-8.533334-17.066667c-238.933333-221.866667-597.333333-221.866667-836.266666 0-8.533333 8.533333-8.533333 8.533333-8.533334 17.066667s0 17.066667 8.533334 17.066667L2218.666667 657.066667c8.533333 8.533333 25.6 8.533333 34.133333 0 76.8-68.266667 170.666667-110.933333 281.6-110.933334z m187.733333 238.933334c8.533333 0 8.533333-8.533333 8.533334-17.066667s0-17.066667-8.533334-17.066667c-110.933333-93.866667-273.066667-93.866667-375.466666 0-8.533333 8.533333-8.533333 8.533333-8.533334 17.066667s0 17.066667 8.533334 17.066667l170.666666 170.666666c8.533333 8.533333 8.533333 8.533333 17.066667 8.533334s17.066667 0 17.066667-8.533334l170.666666-170.666666zM85.333333 622.933333h85.333334c51.2 0 85.333333 34.133333 85.333333 85.333334v170.666666c0 51.2-34.133333 85.333333-85.333333 85.333334H85.333333c-51.2 0-85.333333-34.133333-85.333333-85.333334v-170.666666c0-42.666667 34.133333-85.333333 85.333333-85.333334z m401.066667-170.666666h85.333333c51.2 0 85.333333 34.133333 85.333334 85.333333v341.333333c0 51.2-34.133333 85.333333-85.333334 85.333334h-85.333333c-51.2 0-85.333333-34.133333-85.333333-85.333334v-341.333333c0-42.666667 34.133333-85.333333 85.333333-85.333333zM878.933333 256h85.333334c51.2 0 85.333333 34.133333 85.333333 85.333333v537.6c0 51.2-34.133333 85.333333-85.333333 85.333334h-85.333334c-51.2 0-85.333333-85.333334-85.333333-85.333334V341.333333c0-51.2 42.666667-85.333333 85.333333-85.333333zM1280 59.733333h85.333333c51.2 0 85.333333 34.133333 85.333334 85.333334v742.4c0 51.2-34.133333 85.333333-85.333334 85.333333h-85.333333c-51.2 0-85.333333-85.333333-85.333333-85.333333V145.066667c0-51.2 34.133333-85.333334 85.333333-85.333333z"></path>
+
+      <rect id="battery-fill"
+            x="3780.27"
+            y="196.27"
+            width="1544.53"
+            height="631.47"
+            rx="70"></rect>
+
+    </svg>
+
+  </div>
+</div>
+
+
+<!-- App grid: 20 placeholder icons, 4 columns x 5 rows -->
+
+<div class="app-grid" id="app-grid"></div>
+
+<!-- Page indicator -->
+
+<div class="page-dots">
+  <div class="dot active"></div>
+  <div class="dot"></div>
+  <div class="dot"></div>
+</div>
+
+<!-- Dock: 4 placeholder icons -->
+
+<div class="dock" id="dock"></div>
+
+<div class="home-indicator"></div>
+
+
+<script>
+
+/* =====================================================================
+   WALLPAPER LAYER (same as lock screen, kept in sync for now —
+   swap the gradient stops here to change the desktop background)
+===================================================================== */
+
+const Wallpaper = (() => {
+
+  const canvas = document.getElementById('wallpaper');
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+  let current = {
+    type: 'gradient',
+    stops: ['#6a7ea8', '#8b6ea3', '#a8778f']
+  };
+
+  function resize(){
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.round(window.innerWidth * dpr);
+    canvas.height = Math.round(window.innerHeight * dpr);
+    canvas.style.width = window.innerWidth + 'px';
+    canvas.style.height = window.innerHeight + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    draw();
+  }
+
+  function draw(){
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    const g = ctx.createLinearGradient(0, 0, w * 0.35, h);
+    const n = current.stops.length;
+    current.stops.forEach((c, i) => g.addColorStop(i / (n - 1), c));
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, h);
+    AdaptiveTheme.refresh();
+  }
+
+  window.addEventListener('resize', resize);
+
+  return {
+    ctx,
+    init(){ resize(); }
+  };
+
+})();
+
+
+/* =====================================================================
+   ADAPTIVE STATUS BAR COLOR (samples wallpaper luminance behind it)
+===================================================================== */
+
+const AdaptiveTheme = (() => {
+
+  const LIGHT_THRESHOLD = 150;
+
+  function regionLuminance(xRatio, yRatio, wRatio, hRatio){
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    const x = Math.max(0, Math.floor(xRatio * w));
+    const y = Math.max(0, Math.floor(yRatio * h));
+    const rw = Math.max(1, Math.min(w - x, Math.floor(wRatio * w)));
+    const rh = Math.max(1, Math.min(h - y, Math.floor(hRatio * h)));
+    let data;
+    try{
+      data = Wallpaper.ctx.getImageData(x, y, rw, rh).data;
+    } catch(e){
+      return 128;
+    }
+    let total = 0, count = 0;
+    for(let i = 0; i < data.length; i += 4){
+      total += 0.299*data[i] + 0.587*data[i+1] + 0.114*data[i+2];
+      count++;
+    }
+    return count ? total / count : 128;
+  }
+
+  function refresh(){
+    const statusLum = regionLuminance(0, 0, 1, 0.09);
+    document.getElementById('status-bar').style.color =
+      statusLum > LIGHT_THRESHOLD ? '#000' : '#fff';
+  }
+
+  return { refresh };
+
+})();
+
+
+/* =====================================================================
+   CLOCK (status bar time only, no lock-screen big clock here)
+===================================================================== */
+
+function updateTime(){
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2, '0');
+  const mm = String(now.getMinutes()).padStart(2, '0');
+  document.getElementById('status-time').textContent = `${hh}:${mm}`;
+}
+
+
+/* =====================================================================
+   BATTERY (same logic as lock screen)
+===================================================================== */
+
+function renderBattery(level, charging){
+  const fillEl = document.getElementById('battery-fill');
+  if(!fillEl) return;
+  const maxWidth = 1544.53;
+  const minWidth = 80;
+  const width = Math.max(minWidth, Math.round(level * maxWidth));
+  fillEl.setAttribute('width', width);
+  fillEl.style.fill = charging ? '#30d158' : '';
+}
+
+async function initBattery(){
+  if('getBattery' in navigator){
+    try{
+      const battery = await navigator.getBattery();
+      const update = () => renderBattery(battery.level, battery.charging);
+      battery.addEventListener('levelchange', update);
+      battery.addEventListener('chargingchange', update);
+      update();
+    } catch(e){
+      renderBattery(1, false);
+    }
+  } else {
+    renderBattery(1, false);
+  }
+}
+
+
+/* =====================================================================
+   PLACEHOLDER APP ICONS
+   Swap `name` + `color` per icon later; grid/dock layout stays the same.
+===================================================================== */
+
+const PLACEHOLDER_COLORS = [
+  '#4C8DFF', '#34C759', '#FF9F0A', '#AF52DE',
+  '#FF3B30', '#5AC8FA', '#FF2D78', '#8E8E93'
+];
+
+function buildIcon(index){
+  const wrap = document.createElement('div');
+  wrap.className = 'app-icon';
+
+  const glyph = document.createElement('div');
+  glyph.className = 'glyph';
+  glyph.style.background = PLACEHOLDER_COLORS[index % PLACEHOLDER_COLORS.length];
+  glyph.textContent = index + 1;
+
+  const label = document.createElement('div');
+  label.className = 'label';
+  label.textContent = `应用 ${index + 1}`;
+
+  wrap.appendChild(glyph);
+  wrap.appendChild(label);
+  return wrap;
+}
+
+function buildDockIcon(index){
+  const glyph = document.createElement('div');
+  glyph.className = 'glyph';
+  glyph.style.background = PLACEHOLDER_COLORS[(index + 4) % PLACEHOLDER_COLORS.length];
+  glyph.textContent = index + 1;
+  return glyph;
+}
+
+function populateGrid(){
+  const grid = document.getElementById('app-grid');
+  for(let i = 0; i < 20; i++){
+    grid.appendChild(buildIcon(i));
+  }
+
+  const dock = document.getElementById('dock');
+  for(let i = 0; i < 4; i++){
+    dock.appendChild(buildDockIcon(i));
+  }
+}
+
+
+/* =====================================================================
+   LONG-PRESS ANYWHERE ON WALLPAPER -> back to lockscreen.html
+   (dev/testing affordance — not a visible button. Relative path, so
+   lockscreen.html must sit in the same folder as this file.)
+===================================================================== */
+
+(() => {
+  let pressTimer = null;
+
+  function isInteractive(el){
+    return !!(el && el.closest && (el.closest('.app-icon') || el.closest('.dock')));
+  }
+
+  function start(e){
+    if(isInteractive(e.target)) return;
+    pressTimer = setTimeout(() => {
+      window.location.href = 'lockscreen.html';
+    }, 700);
+  }
+
+  function cancel(){
+    clearTimeout(pressTimer);
+  }
+
+  document.addEventListener('touchstart', start, { passive: true });
+  document.addEventListener('touchend', cancel);
+  document.addEventListener('touchmove', cancel);
+  document.addEventListener('mousedown', start);
+  document.addEventListener('mouseup', cancel);
+  document.addEventListener('mouseleave', cancel);
+})();
+
+
+/* =====================================================================
+   START
+===================================================================== */
+
+Wallpaper.init();
+updateTime();
+setInterval(updateTime, 1000);
+initBattery();
+populateGrid();
+
+</script>
+
+</body>
+</html>
