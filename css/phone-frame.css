@@ -1,0 +1,322 @@
+/* =========================
+   手机最外层
+========================= */
+
+.phone{
+    position:relative;
+
+    width:min(390px,88vw);
+    height:min(770px,91vh);
+
+    border-radius:60px;
+    padding:5px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #eeeeee 0%,
+        #bdbdbd 10%,
+        #f7f7f7 20%,
+        #9b9b9b 55%,
+        #ededed 88%,
+        #a5a5a5 100%
+    );
+
+    box-shadow:
+    0 18px 38px rgba(0,0,0,.16),
+    0 4px 12px rgba(0,0,0,.12),
+    inset 1px 0 1px rgba(255,255,255,.85),
+    inset -1px 0 2px rgba(0,0,0,.25);
+}
+
+
+/* =========================
+   黑色手机边框
+========================= */
+
+.phone-frame{
+    position:relative;
+
+    width:100%;
+    height:100%;
+
+    padding:8px;
+
+    border-radius:56px;
+
+    background:
+    linear-gradient(
+        145deg,
+        #171717 0%,
+        #050505 25%,
+        #000 55%,
+        #080808 78%,
+        #191919 100%
+    );
+
+    box-shadow:
+    inset 0 1px 1px rgba(255,255,255,.15),
+    inset 0 -2px 4px rgba(0,0,0,.9),
+    0 0 0 1px rgba(0,0,0,.8);
+}
+
+
+/* =========================
+   屏幕
+========================= */
+
+.screen{
+    position:relative;
+
+    width:100%;
+    height:100%;
+
+    overflow:hidden;
+
+    border-radius:48px;
+
+    background:#fff;
+
+    box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.3);
+}
+
+
+/* =========================
+   Satou 手机内容区域
+========================= */
+
+.screen-content{
+    position:absolute;
+    inset:0;
+
+    width:100%;
+    height:100%;
+
+    overflow:hidden;
+}
+
+
+/* =========================
+   Dynamic Island
+========================= */
+
+.dynamic-island{
+    position:absolute;
+
+    z-index:1000;
+
+    top:16px;
+    left:50%;
+
+    transform:translateX(-50%);
+
+    width:60px;
+    height:18px;
+
+    border-radius:30px;
+
+    background:
+    linear-gradient(
+        180deg,
+        #050505 0%,
+        #000 55%,
+        #111 100%
+    );
+
+    box-shadow:
+    inset 0 1px 2px rgba(255,255,255,.07),
+    0 1px 2px rgba(0,0,0,.3);
+}
+
+
+/* 灵动岛镜头 */
+
+.dynamic-island::after{
+    content:"";
+
+    position:absolute;
+
+    width:4px;
+    height:4px;
+
+    right:7px;
+    top:7px;
+
+    border-radius:50%;
+
+    background:
+    radial-gradient(
+        circle at 35% 30%,
+        #303030 0%,
+        #111 45%,
+        #000 100%
+    );
+}
+
+
+/* =========================
+   左侧静音键
+========================= */
+
+.side-switch,
+.volume-up,
+.volume-down{
+    position:absolute;
+
+    z-index:200;
+
+    left:-5px;
+
+    width:4px;
+
+    border-radius:3px 0 0 3px;
+
+    background:
+    linear-gradient(
+        90deg,
+        #888,
+        #d0d0d0,
+        #999
+    );
+
+    box-shadow:
+    -1px 0 1px rgba(0,0,0,.25);
+}
+
+.side-switch{
+    top:137px;
+    height:27px;
+}
+
+.volume-up{
+    top:194px;
+    height:54px;
+}
+
+.volume-down{
+    top:260px;
+    height:54px;
+}
+
+
+/* =========================
+   右侧电源键
+========================= */
+
+.power-button{
+    position:absolute;
+
+    z-index:200;
+
+    right:-5px;
+    top:212px;
+
+    width:4px;
+    height:88px;
+
+    border-radius:0 3px 3px 0;
+
+    background:
+    linear-gradient(
+        90deg,
+        #929292,
+        #d0d0d0,
+        #929292
+    );
+
+    box-shadow:
+    1px 0 1px rgba(0,0,0,.25);
+}
+
+
+/* =========================
+   手机端适配
+========================= */
+
+@media(max-width:500px){
+
+    .phone{
+        width:92vw;
+        height:90vh;
+
+        border-radius:51px;
+        padding:4px;
+    }
+
+    .phone-frame{
+        border-radius:47px;
+        padding:7px;
+    }
+
+    .screen{
+        border-radius:40px;
+    }
+
+    .dynamic-island{
+        top:14px;
+    }
+
+    .side-switch{
+        top:120px;
+    }
+
+    .volume-up{
+        top:170px;
+        height:49px;
+    }
+
+    .volume-down{
+        top:230px;
+        height:49px;
+    }
+
+    .power-button{
+        top:190px;
+        height:82px;
+    }
+}
+
+
+/* =========================
+   无手机边框模式
+========================= */
+
+body.no-phone-frame{
+    background:#000;
+}
+
+body.no-phone-frame .phone{
+    width:100vw;
+    height:100vh;
+
+    padding:0;
+
+    border-radius:0;
+
+    background:none;
+
+    box-shadow:none;
+}
+
+body.no-phone-frame .phone-frame{
+    width:100%;
+    height:100%;
+
+    padding:0;
+
+    border-radius:0;
+
+    background:none;
+
+    box-shadow:none;
+}
+
+body.no-phone-frame .screen{
+    width:100%;
+    height:100%;
+
+    border-radius:0;
+
+    box-shadow:none;
+}
