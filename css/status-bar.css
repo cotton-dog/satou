@@ -1,0 +1,92 @@
+/* =========================
+   SATOU 全局状态栏
+========================= */
+
+.status-bar{
+    position:absolute;
+
+    top:0;
+    left:0;
+
+    width:100%;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding-left:28px;
+    padding-right:28px;
+
+    padding-top:calc(env(safe-area-inset-top) + 14px);
+
+    z-index:500;
+
+    color:#fff;
+
+    transition:color .4s ease;
+
+    pointer-events:none;
+}
+
+
+/* =========================
+   时间
+========================= */
+
+.status-time{
+    font-size:15px;
+
+    font-weight:600;
+
+    letter-spacing:.2px;
+
+    color:inherit;
+}
+
+
+/* =========================
+   状态图标
+========================= */
+
+.status-icons{
+    display:flex;
+
+    align-items:center;
+
+    justify-content:flex-end;
+}
+
+
+.status-icons svg{
+    width:78px;
+    height:auto;
+
+    display:block;
+}
+
+
+.status-icons svg path{
+    fill:currentColor;
+}
+
+
+/* =========================
+   电池
+========================= */
+
+#battery-fill{
+    fill:currentColor;
+
+    transition:
+    width .4s ease,
+    fill .4s ease;
+}
+
+
+/* =========================
+   浅色背景
+========================= */
+
+.status-bar.on-light{
+    color:#000;
+}
