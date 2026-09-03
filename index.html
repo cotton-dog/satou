@@ -182,6 +182,26 @@ body{
 
 
 /* =========================
+   手机页面
+========================= */
+
+#phone-page{
+    position:absolute;
+
+    inset:0;
+
+    width:100%;
+    height:100%;
+
+    border:0;
+
+    display:block;
+
+    background:#000;
+}
+
+
+/* =========================
    Dynamic Island
 ========================= */
 
@@ -415,8 +435,11 @@ body{
 
             <div class="screen-content">
 
-                <!-- 锁屏 / 桌面 / App
-                     后面从这里开始写 -->
+                <iframe
+                    id="phone-page"
+                    src="./pages/lockscreen.html"
+                    frameborder="0">
+                </iframe>
 
             </div>
 
