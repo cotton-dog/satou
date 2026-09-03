@@ -13,10 +13,6 @@ viewport-fit=cover">
 
 <title>satou</title>
 
-<!-- =========================
-     PWA
-========================= -->
-
 <link rel="manifest" href="./manifest.webmanifest">
 
 <link rel="icon"
@@ -167,19 +163,6 @@ body{
     height:100%;
 
     overflow:hidden;
-
-    /*
-       以后这里放：
-
-       ① 锁屏
-       ② 手机桌面
-       ③ App
-       ④ App 内页面
-       ⑤ 状态栏
-       ⑥ 壁纸
-    */
-
-    background:#000;
 }
 
 
@@ -187,8 +170,7 @@ body{
    锁屏页面
 ========================= */
 
-#lockscreen-page{
-
+.page-frame{
     position:absolute;
 
     inset:0;
@@ -197,13 +179,14 @@ body{
     height:100%;
 
     border:0;
+    margin:0;
+    padding:0;
 
     display:block;
 
     overflow:hidden;
 
     background:#000;
-
 }
 
 
@@ -363,6 +346,10 @@ body{
         border-radius:40px;
     }
 
+    .page-frame{
+        border-radius:40px;
+    }
+
     .dynamic-island{
         top:14px;
     }
@@ -441,14 +428,13 @@ body{
 
             <div class="screen-content">
 
-                <!-- =========================
-                     当前页面：锁屏
-                     ========================= -->
+                <!-- 锁屏页面 -->
 
                 <iframe
-                    id="lockscreen-page"
                     src="./lockscreen.html"
-                    title="Satou Lock Screen">
+                    class="page-frame"
+                    title="Satou Lock Screen"
+                    scrolling="no">
                 </iframe>
 
             </div>
