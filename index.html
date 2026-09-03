@@ -2,49 +2,40 @@
 <html lang="zh-CN">
 
 <head>
-
 <meta charset="UTF-8">
 
 <meta name="viewport"
-      content="width=device-width,
-               initial-scale=1.0,
-               maximum-scale=1.0,
-               user-scalable=no,
-               viewport-fit=cover">
+content="width=device-width,
+initial-scale=1.0,
+maximum-scale=1.0,
+user-scalable=no,
+viewport-fit=cover">
 
 <title>satou</title>
 
-
 <!-- =========================
-     SATOU PWA
+     PWA
 ========================= -->
 
-<link rel="manifest"
-      href="./manifest.webmanifest">
+<link rel="manifest" href="./manifest.webmanifest">
 
-<!-- 网站图标 -->
 <link rel="icon"
-      type="image/png"
-      href="./icons/icon-192.png">
+type="image/png"
+href="https://i.imgs.ovh/2026/09/02/5fd685cc628af5558ac9b6ee3668867c.png">
 
-<!-- 添加到 iPhone 主屏幕 -->
 <link rel="apple-touch-icon"
-      href="./icons/icon-192.png">
+href="https://i.imgs.ovh/2026/09/02/5fd685cc628af5558ac9b6ee3668867c.png">
 
-<meta name="apple-mobile-web-app-title"
-      content="satou">
+<meta name="apple-mobile-web-app-title" content="satou">
 
-<meta name="apple-mobile-web-app-capable"
-      content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
 
 <meta name="apple-mobile-web-app-status-bar-style"
-      content="black-translucent">
+content="black-translucent">
 
-<meta name="mobile-web-app-capable"
-      content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 
-<meta name="theme-color"
-      content="#050507">
+<meta name="theme-color" content="#eeeeee">
 
 
 <style>
@@ -67,117 +58,79 @@ body{
 }
 
 body{
-
-    background:#ffffff;
+    background:#eeeeee;
 
     display:flex;
-
     align-items:center;
-
     justify-content:center;
-
-    font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "SF Pro Display",
-        "Helvetica Neue",
-        Arial,
-        sans-serif;
 
     user-select:none;
     -webkit-user-select:none;
 
-    -webkit-tap-highlight-color:
-        transparent;
+    touch-action:none;
 }
 
 
 /* =========================
-   手机整体
+   手机最外层
 ========================= */
 
 .phone{
-
     position:relative;
 
-    width:min(96vw,430px);
+    width:min(390px,88vw);
+    height:min(770px,91vh);
 
-    height:min(96vh,860px);
-
-    max-width:calc(100vw - 14px);
-
-    max-height:calc(100vh - 14px);
-
-    aspect-ratio:430 / 860;
-
-    border-radius:58px;
-
-
-    /* 外层金属边 */
+    border-radius:60px;
+    padding:5px;
 
     background:
-        linear-gradient(
-            135deg,
-            #8c8a91 0%,
-            #3b3940 8%,
-            #111116 20%,
-            #29272d 50%,
-            #09090d 80%,
-            #74717a 100%
-        );
-
-    padding:7px;
-
-
-    /* 立体边缘 */
+    linear-gradient(
+        145deg,
+        #eeeeee 0%,
+        #bdbdbd 10%,
+        #f7f7f7 20%,
+        #9b9b9b 55%,
+        #ededed 88%,
+        #a5a5a5 100%
+    );
 
     box-shadow:
-
-        0 0 0 1px #aaa7ae,
-
-        0 0 0 3px #4d4a51,
-
-        0 12px 30px
-        rgba(0,0,0,.20),
-
-        inset 1px 1px 2px
-        rgba(255,255,255,.45),
-
-        inset -2px -2px 4px
-        rgba(0,0,0,.85);
-
-    overflow:visible;
+    0 18px 38px rgba(0,0,0,.16),
+    0 4px 12px rgba(0,0,0,.12),
+    inset 1px 0 1px rgba(255,255,255,.85),
+    inset -1px 0 2px rgba(0,0,0,.25);
 }
 
 
 /* =========================
-   黑色内边框
+   黑色手机边框
 ========================= */
 
-.bezel{
-
+.phone-frame{
     position:relative;
 
     width:100%;
     height:100%;
 
-    border-radius:52px;
+    padding:8px;
 
-    background:#050507;
+    border-radius:56px;
 
-    padding:
-        21px
-        14px
-        18px;
-
+    background:
+    linear-gradient(
+        145deg,
+        #171717 0%,
+        #050505 25%,
+        #000 55%,
+        #080808 78%,
+        #191919 100%
+    );
 
     box-shadow:
-
-        inset 0 1px 2px
-        rgba(255,255,255,.18),
-
-        inset 0 -2px 4px
-        rgba(0,0,0,.9);
+    inset 0 1px 1px rgba(255,255,255,.15),
+    inset 0 -2px 4px rgba(0,0,0,.9),
+    0 0 0 1px rgba(0,0,0,.8);
 }
 
 
@@ -186,26 +139,19 @@ body{
 ========================= */
 
 .screen{
-
     position:relative;
 
     width:100%;
     height:100%;
 
-    background:#ffffff;
-
-    border-radius:43px;
-
     overflow:hidden;
 
+    border-radius:48px;
+
+    background:#fff;
 
     box-shadow:
-
-        inset 0 0 0 1px
-        rgba(0,0,0,.08),
-
-        inset 0 0 8px
-        rgba(0,0,0,.08);
+    inset 0 0 0 1px rgba(255,255,255,.3);
 }
 
 
@@ -214,9 +160,7 @@ body{
 ========================= */
 
 .screen-content{
-
     position:absolute;
-
     inset:0;
 
     width:100%;
@@ -224,219 +168,119 @@ body{
 
     overflow:hidden;
 
-    background:#ffffff;
+    /*
+       以后这里放：
 
-    z-index:1;
+       ① 锁屏
+       ② 手机桌面
+       ③ App
+       ④ App 内页面
+       ⑤ 状态栏
+       ⑥ 壁纸
+    */
 }
 
 
 /* =========================
-   顶部药丸
+   Dynamic Island
 ========================= */
 
 .dynamic-island{
-
     position:absolute;
 
-    top:18px;
+    z-index:100;
 
+    top:16px;
     left:50%;
 
     transform:translateX(-50%);
 
-    width:116px;
+    width:60px;
+    height:18px;
 
-    height:32px;
-
-    border-radius:20px;
-
+    border-radius:30px;
 
     background:
-        linear-gradient(
-            145deg,
-            #020202,
-            #090909 55%,
-            #000000
-        );
-
+    linear-gradient(
+        180deg,
+        #050505 0%,
+        #000 55%,
+        #111 100%
+    );
 
     box-shadow:
-
-        0 1px 2px
-        rgba(255,255,255,.08),
-
-        inset 0 -1px 2px
-        rgba(255,255,255,.03);
-
-    z-index:100;
+    inset 0 1px 2px rgba(255,255,255,.07),
+    0 1px 2px rgba(0,0,0,.3);
 }
 
 
-/* =========================
-   摄像头
-========================= */
+/* 灵动岛镜头 */
 
-.camera{
-
-    position:absolute;
-
-    right:10px;
-
-    top:50%;
-
-    transform:translateY(-50%);
-
-    width:12px;
-
-    height:12px;
-
-    border-radius:50%;
-
-
-    background:
-        radial-gradient(
-            circle at 35% 30%,
-            #374a9b 0%,
-            #111c56 30%,
-            #02030a 65%,
-            #000 100%
-        );
-
-
-    box-shadow:
-
-        0 0 0 1px #101018,
-
-        inset 0 0 2px
-        rgba(255,255,255,.45);
-}
-
-
-/* =========================
-   摄像头高光
-========================= */
-
-.camera::after{
-
+.dynamic-island::after{
     content:"";
 
     position:absolute;
 
-    width:3px;
+    width:4px;
+    height:4px;
 
-    height:3px;
-
-    left:3px;
-
-    top:2px;
+    right:7px;
+    top:7px;
 
     border-radius:50%;
 
     background:
-        rgba(255,255,255,.5);
+    radial-gradient(
+        circle at 35% 30%,
+        #303030 0%,
+        #111 45%,
+        #000 100%
+    );
 }
 
 
 /* =========================
-   顶部外壳细节
+   左侧静音键
 ========================= */
 
-.top-detail{
-
+.side-switch,
+.volume-up,
+.volume-down{
     position:absolute;
-
-    top:-2px;
-
-    left:50%;
-
-    transform:translateX(-50%);
-
-    width:88px;
-
-    height:4px;
-
-    border-radius:
-        0 0 5px 5px;
-
-    background:#242329;
-
-
-    box-shadow:
-
-        inset 0 -1px 1px
-        rgba(0,0,0,.8),
-
-        0 1px 1px
-        rgba(255,255,255,.12);
 
     z-index:200;
-}
-
-
-/* =========================
-   左侧按键
-========================= */
-
-.left-button{
-
-    position:absolute;
 
     left:-5px;
 
-    width:5px;
+    width:4px;
 
-    border-radius:
-        4px 0 0 4px;
-
+    border-radius:3px 0 0 3px;
 
     background:
-        linear-gradient(
-            90deg,
-            #77747b,
-            #29272d,
-            #111116
-        );
-
+    linear-gradient(
+        90deg,
+        #888,
+        #d0d0d0,
+        #999
+    );
 
     box-shadow:
-
-        -1px 1px 2px
-        rgba(0,0,0,.5),
-
-        inset 1px 0
-        rgba(255,255,255,.35);
-
-    z-index:300;
+    -1px 0 1px rgba(0,0,0,.25);
 }
 
-
-/* 静音键 */
-
-.silent{
-
-    top:106px;
-
-    height:43px;
+.side-switch{
+    top:137px;
+    height:27px;
 }
-
-
-/* 音量+ */
 
 .volume-up{
-
-    top:212px;
-
-    height:67px;
+    top:194px;
+    height:54px;
 }
 
-
-/* 音量- */
-
 .volume-down{
-
-    top:291px;
-
-    height:67px;
+    top:260px;
+    height:54px;
 }
 
 
@@ -445,189 +289,110 @@ body{
 ========================= */
 
 .power-button{
-
     position:absolute;
+
+    z-index:200;
 
     right:-5px;
+    top:212px;
 
-    top:260px;
+    width:4px;
+    height:88px;
 
-    width:5px;
-
-    height:72px;
-
-    border-radius:
-        0 4px 4px 0;
-
+    border-radius:0 3px 3px 0;
 
     background:
-        linear-gradient(
-            90deg,
-            #111116,
-            #29272d,
-            #77747b
-        );
-
+    linear-gradient(
+        90deg,
+        #929292,
+        #d0d0d0,
+        #929292
+    );
 
     box-shadow:
-
-        1px 1px 2px
-        rgba(0,0,0,.5),
-
-        inset -1px 0
-        rgba(255,255,255,.35);
-
-    z-index:300;
+    1px 0 1px rgba(0,0,0,.25);
 }
 
 
 /* =========================
-   手机外壳高光
+   手机端适配
 ========================= */
 
-.phone::before{
-
-    content:"";
-
-    position:absolute;
-
-    inset:1px;
-
-    border-radius:57px;
-
-    pointer-events:none;
-
-    border:
-        1px solid
-        rgba(255,255,255,.20);
-
-    z-index:500;
-}
-
-
-/* =========================
-   小屏幕
-========================= */
-
-@media(max-width:360px){
+@media(max-width:500px){
 
     .phone{
+        width:92vw;
+        height:90vh;
 
-        width:calc(100vw - 10px);
-
-        height:calc(100vh - 10px);
-
-        border-radius:45px;
-
-        padding:5px;
+        border-radius:51px;
+        padding:4px;
     }
 
-
-    .bezel{
-
-        border-radius:40px;
-
-        padding:
-            16px
-            11px
-            14px;
+    .phone-frame{
+        border-radius:47px;
+        padding:7px;
     }
-
 
     .screen{
-
-        border-radius:33px;
+        border-radius:40px;
     }
-
 
     .dynamic-island{
-
         top:14px;
-
-        width:100px;
-
-        height:29px;
     }
 
-
-    .silent{
-
-        top:80px;
-
-        height:35px;
+    .side-switch{
+        top:120px;
     }
-
 
     .volume-up{
-
         top:170px;
-
-        height:52px;
+        height:49px;
     }
-
 
     .volume-down{
-
-        top:232px;
-
-        height:52px;
+        top:230px;
+        height:49px;
     }
-
 
     .power-button{
-
-        top:210px;
-
-        height:58px;
+        top:190px;
+        height:82px;
     }
-
 }
 
 
 /* =========================
-   矮屏设备
+   PWA 安全区域
 ========================= */
 
-@media(max-height:500px){
+@supports(padding:env(safe-area-inset-top)){
 
-    .phone{
-
-        height:calc(100vh - 8px);
-
-        width:auto;
-
-        aspect-ratio:430 / 860;
+    .screen-content{
+        padding-top:env(safe-area-inset-top);
+        padding-bottom:env(safe-area-inset-bottom);
     }
-
 }
 
 </style>
-
 </head>
 
 
 <body>
 
-
 <!-- ==================================================
-     SATOU
+     SATOU PHONE
 ================================================== -->
 
 <div class="phone">
 
+    <!-- 左侧实体键 -->
 
-    <!-- 顶部外壳细节 -->
+    <div class="side-switch"></div>
 
-    <div class="top-detail"></div>
+    <div class="volume-up"></div>
 
-
-    <!-- 左侧实体按键 -->
-
-    <div class="left-button silent"></div>
-
-    <div class="left-button volume-up"></div>
-
-    <div class="left-button volume-down"></div>
+    <div class="volume-down"></div>
 
 
     <!-- 右侧电源键 -->
@@ -635,53 +400,39 @@ body{
     <div class="power-button"></div>
 
 
-    <!-- 黑色内边框 -->
+    <!-- 手机黑色边框 -->
 
-    <div class="bezel">
+    <div class="phone-frame">
 
-
-        <!-- 屏幕 -->
+        <!-- 手机屏幕 -->
 
         <div class="screen">
 
-
             <!--
-                SATOU 手机系统内容
-
-                以后所有桌面、锁屏、App
-                都放在这个区域
+                SATOU 所有手机界面
+                都写在这里
             -->
 
             <div class="screen-content">
 
-            </div>
-
-
-            <!-- 顶部药丸 -->
-
-            <div class="dynamic-island">
-
-                <div class="camera"></div>
+                <!-- 锁屏 / 桌面 / App
+                     后面从这里开始写 -->
 
             </div>
 
+
+            <!-- 灵动岛 -->
+
+            <div class="dynamic-island"></div>
 
         </div>
 
-
     </div>
-
 
 </div>
 
 
-
 <script>
-
-/* ==================================================
-   SATOU PWA
-================================================== */
-
 
 /* =========================
    Service Worker
@@ -689,69 +440,49 @@ body{
 
 if("serviceWorker" in navigator){
 
-    window.addEventListener(
-        "load",
-        function(){
+    window.addEventListener("load",()=>{
 
-            navigator.serviceWorker
-                .register("./sw.js", {
-                    scope:"./"
-                })
-                .then(function(){
+        navigator.serviceWorker
+        .register("./sw.js")
+        .then(()=>{
+            console.log("satou PWA 已启动");
+        })
+        .catch(error=>{
+            console.log("Service Worker 注册失败",error);
+        });
 
-                    console.log(
-                        "satou PWA 已启动"
-                    );
-
-                })
-                .catch(function(error){
-
-                    console.error(
-                        "satou Service Worker 错误:",
-                        error
-                    );
-
-                });
-
-        }
-    );
+    });
 
 }
 
 
 /* =========================
-   禁止双指缩放
+   禁止手势缩放
 ========================= */
 
 document.addEventListener(
     "gesturestart",
-    function(event){
-
-        event.preventDefault();
-
-    }
+    event=>event.preventDefault()
 );
 
 
 /* =========================
-   防止双击缩放
+   禁止双击缩放
 ========================= */
 
-let lastTouchEnd = 0;
+let lastTouchEnd=0;
 
 document.addEventListener(
     "touchend",
-    function(event){
+    event=>{
 
-        const now = Date.now();
+        const now=Date.now();
 
-        if(now - lastTouchEnd <= 300){
-
+        if(now-lastTouchEnd<=300){
             event.preventDefault();
-
         }
 
-        lastTouchEnd = now;
+        lastTouchEnd=now;
 
     },
     false
@@ -759,7 +490,5 @@ document.addEventListener(
 
 </script>
 
-
 </body>
-
 </html>
