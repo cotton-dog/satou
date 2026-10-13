@@ -452,27 +452,6 @@ body{
 
 <script>
 
-/* =========================
-   Service Worker
-========================= */
-
-if("serviceWorker" in navigator){
-
-    window.addEventListener("load",()=>{
-
-        navigator.serviceWorker
-        .register("./sw.js")
-        .then(()=>{
-            console.log("satou PWA 已启动");
-        })
-        .catch(error=>{
-            console.log("Service Worker 注册失败",error);
-        });
-
-    });
-
-}
-
 
 /* =========================
    禁止手势缩放
